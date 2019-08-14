@@ -8,7 +8,7 @@
 
 #include<unistd.h>
 
-
+#define CONS 100000
 
 
 int main(int argc, char* argv[])
@@ -33,6 +33,18 @@ int main(int argc, char* argv[])
         write(STDOUT_FILENO, &file_error, sizeof(file_error));
         return 0;
     }
+
+    struct stat folder;
+    int is_dir = 1;
+    // check for directory
+    if(stat(argv[2], &folder) != 0 || !S_ISDIR(folder.st_mode))
+    {
+        char file_error[] = {"The directory specified has not been found. Please confirm with the readme and retry\n"};
+        write(STDOUT_FILENO, &file_error, sizeof(file_error));        
+        is_dir = 0;
+    }
+
+    
     // check for new file;
     long long int new = open(argv[3], O_RDONLY);
     if(new == -1)
@@ -42,18 +54,11 @@ int main(int argc, char* argv[])
         return 0;
     }
 
-    struct stat folder;
     struct stat newfile;
     struct stat oldfile;
 
     
-    // check for directory
-    if(stat(argv[2], &folder) != 0 || !S_ISDIR(folder.st_mode))
-    {
-        char file_error[] = {"The directory specified has not been found. Please confirm with the readme and retry\n"};
-        write(STDOUT_FILENO, &file_error, sizeof(file_error));        
-        return 0;    
-    }
+    
 
 
     /* section to check if the files are reverse or not */
@@ -61,23 +66,61 @@ int main(int argc, char* argv[])
 
     // two fds are old and  new
 
-    long long int count = lseek(new, -1, SEEK_END) + 1;
+    long long int count = lseek(new, 0, SEEK_END) ;
 
     // now we know the size of the file: we can start comparing now
     int same = 1;
-    while(count--)
-    {
-        char c, d;
-        read(old, &c,1);
-        read(new, &d, 1);
 
-        if(c != d)
+    long long int blocks = count/CONS;
+    long long int off = count%CONS;
+
+
+    while(blocks--)
+    {
+        lseek(new, -CONS, SEEK_CUR);
+        char c[CONS], d[CONS];
+        read(old, c,CONS);
+        read(new, d, CONS);
+
+        for(int i = 0 ; i<CONS ; i++)
         {
-            same = 0;
+            if(c[i] != d[CONS-i-1]){
+                same = 0;
+                break;
+            }
+        }
+
+        if(same == 0)
+        {
             break;
         }
-        lseek(new, -2 , SEEK_CUR);
+        lseek(new, -CONS , SEEK_CUR);
+    }
 
+
+    if(same == 1)
+    {
+        lseek(new, -off, SEEK_CUR);
+        if(off)
+        {
+            char c[CONS],d[CONS];
+            read(old, &c, off);
+            read(new, &d, off);
+            for(int i = 0 ; i<off ; i++)
+            {   
+                if(c[i] != d[off-i-1])
+                {
+                    same = 0;
+                    break;
+                }
+            }
+
+            // if(same == 0)
+            // {
+            //     break;
+            // }
+            lseek(new, -off*2 , SEEK_CUR);
+        }
     }
 
 
@@ -111,8 +154,14 @@ int main(int argc, char* argv[])
     
 
 
-
+    if(is_dir == 0)
+    {
+    write(STDOUT_FILENO, "Directory exists : NO \n\n" ,24 );
+    }
+    else
+    {
     write(STDOUT_FILENO, "Directory exists : YES \n\n" ,25 );
+    }
 
     char user_per_r[] = {"User  has read permission on "};
     char user_per_w[] = {"User  has write permission on "};
@@ -345,9 +394,14 @@ int main(int argc, char* argv[])
     }
 
     write(STDOUT_FILENO, "\n", 1);
-
+    
     ///////////////////////////////////////////////
 
+    if(is_dir == 0)
+    {
+        write(STDOUT_FILENO, "No directory found! can't say anything \n", 40);
+        return 0;
+    }
 
     if(folder.st_mode & S_IRUSR )
     {
@@ -458,8 +512,8 @@ int main(int argc, char* argv[])
 
 
     write(STDOUT_FILENO, "\n", 1);
-
-
+    close(new);
+    close(old);
 
 
     return 0;
