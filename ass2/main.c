@@ -1,80 +1,118 @@
-#include "main.h"
+    #include "main.h"
 
-char homepath[1024];
-
-
-char home_path[1024];
+    char homepath[1024];
 
 
-int main()
-{
-    get_path(home_path);
+    char home_path[1024];
 
-    while(1)
+
+    int main()
     {
-        displayPrompt();
-        char inp[1024];
-        take_commands(inp);
-    }
-    return 0;
-}
+        get_path(home_path);
 
-
-void displayPrompt()
-{
-    char username[100];
-    char sysname[100];
-
-    char path[1024];
-    get_path(path);
-
-    // we will check what the path is
-    if(strcmp(home_path, path) == 0)
-    {
-        char arr[] = "~";
-        strcpy(path, arr);
-    }
-    else
-    {
-        // now we will give the relative path
-        if(strlen(path) > strlen(home_path))
+        while(1)
         {
-            // now we construct the relative path
-            char tilda[] = "~";
-            char * rel;
-            rel = strtok(path, home_path);
-            strncat(tilda, rel, strlen(path) - strlen(home_path));
-            strcpy(path, tilda);
+            displayPrompt();
+            char inp[1024];
+            take_commands(inp);
+            fflush(stdin);
 
+            // if(strlen(inp) == 0){
+            //     continue;
+            // }
+
+            continue;
+            // okay, now we have the command, now we will remove all the empty spaces
+            char input[1024];
+            int c = 0, d = 0;
+    
+            while (inp[c] != '\0' && inp[c] != '\n')
+            {
+                if (!(inp[c] == ' ' && inp[c+1] == ' '))   
+                {
+                    input[d] = inp[c];
+                    d++;
+                }
+                c++;
+            }
+    
+            input[d] = '\0';
+
+            // printf("the command received is %s\n", input);
+
+            // now we will use strtok to get all the commands:
+
+            
+            char * command = strtok(input, ";");
+            while(command != NULL)
+            {
+                printf("command read is %s\n", command);
+                // execute the command
+                // do whatever is to be done
+                // if successful then move to the next command after the execution
+                // else exit with an appropriate message
+                command = strtok (NULL, ";");
+            }
+        }
+        return 0;
+    }
+
+
+    void displayPrompt()
+    {
+        char username[100];
+        char sysname[100];
+
+        char path[1024];
+        get_path(path);
+
+        // we will check what the path is
+        if(strcmp(home_path, path) == 0)
+        {
+            char arr[] = "~";
+            strcpy(path, arr);
         }
         else
         {
-            char rev[1024];
-            int len = strlen(path);
-            for(int i = len; i>= 0 ; i--)
+            // now we will give the relative path
+            if(strlen(path) > strlen(home_path))
             {
-                rev[i] = path[len - 1 - i];
+                // now we construct the relative path
+                char tilda[] = "~";
+                char * rel;
+                rel = strtok(path, home_path);
+                strncat(tilda, rel, strlen(path) - strlen(home_path));
+                strcpy(path, tilda);
+
             }
-            char * p = strtok(rev, "/");
-            strcpy(path, p);
+            else
+            {
+                char rev[1024];
+                int len = strlen(path);
+                for(int i = len; i>= 0 ; i--)
+                {
+                    rev[i] = path[len - 1 - i];
+                }
+                char * p = strtok(rev, "/");
+                strcpy(path, p);
+            }
         }
+
+        getlogin_r(username, sizeof(username));
+        gethostname(sysname, sizeof(sysname)); 
+
+        printf("<%s @ %s: %s > ", username, sysname,path);
+
+        return;
     }
 
-    getlogin_r(username, sizeof(username));
-    gethostname(sysname, sizeof(sysname)); 
+    void take_commands(char inp[])
+    {
+        fgets(inp, 1024, stdin);
+        return;
+    }
 
-    printf("<%s @ %s: %s> ", username, sysname,path);
-
-    return;
-}
-
-void take_commands(char inp[])
-{
-    scanf ("%[^\n]%*c", inp);
-    return;
-}
-
-void get_path(char arr[])
-{
-    getcwd(arr, 1024);
-}
+    void get_path(char arr[])
+    {
+        getcwd(arr, 1024);
+    }
