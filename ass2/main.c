@@ -21,7 +21,7 @@
             //     continue;
             // }
 
-            continue;
+            
             // okay, now we have the command, now we will remove all the empty spaces
             char input[1024];
             int c = 0, d = 0;
@@ -43,15 +43,30 @@
             // now we will use strtok to get all the commands:
 
             
-            char * command = strtok(input, ";");
+            char * command = strtok(inp, ";");
             while(command != NULL)
             {
-                printf("command read is %s\n", command);
-                // execute the command
-                // do whatever is to be done
-                // if successful then move to the next command after the execution
-                // else exit with an appropriate message
-                command = strtok (NULL, ";");
+                char input[1024];
+                int c = 0, d = 0;
+    
+                while (command[c] != '\0')
+                {
+                    if (!(command[c] == ' ' && command[c+1] == ' '))   
+                    {
+                        input[d] = command[c];
+                        d++;
+                    }
+                    c++;
+                }
+                input[d] = '\0';
+    
+                // printf("command read is %s", input);
+                char a[] = "exit\n";
+                if(strcmp(input, a) == 0){
+                    return 0;
+                }
+
+                command = strtok (NULL, "; ");
             }
         }
         return 0;
