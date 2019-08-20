@@ -10,7 +10,7 @@ Path for input file ( any variation in this order could lead to unintended conse
 ->
 STEPS TO RUN THE CODE:
 1. gcc ques1.c
-2. ./a.out (path for source file) (Path for dest file)
+2. ./a.out (path for source file)
 
 NOTE : The directory name has been specified in the assignment pdf hence that will be created irrespective of the dest path. Please give the output file path accordingly.
 

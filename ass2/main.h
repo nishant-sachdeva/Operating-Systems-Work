@@ -14,5 +14,19 @@
 void get_path(char arr[]);
 void displayPrompt();
 void take_commands(char input[]);
+void do_work(char inp[]);
+
+
+char list_of_commands[10][10]={
+
+ "ls",
+ "cd",
+ "pwd",
+ "pinfo",
+ "echo", 
+ "history"
+ };
+
+
 
 int main();
