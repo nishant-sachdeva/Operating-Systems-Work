@@ -31,6 +31,9 @@ void do_work(char inp[])
 	{
 		char *secondary_2;
 		char *parts = strtok_r(command, " ", &secondary_2);
+		int arg = 0;
+		printf("this is a new command coming \n");
+		char data[100][10];
 		while (parts != NULL)
 		{
             // now, the entire string is one command, 
@@ -43,12 +46,17 @@ void do_work(char inp[])
                 exit(0);
             }
 
-            
-			printf("parts are %s \n", parts);
+			strcpy(data[arg],  parts);
+			arg++;
+
+			// idhar what I want is that I have a 2d array jhaan main yeh saara data store kar loon
 			parts = strtok_r(NULL, " ", &secondary_2);
 		}
-		printf("\n");
 		command = strtok_r(NULL, ";", &secondary);
+		for(int i = 0 ; i<arg ; i++)
+		{
+			printf("%s\n", data[i]);
+		}
 	}
     return ;
 }
