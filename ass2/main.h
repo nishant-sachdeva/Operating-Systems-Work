@@ -8,6 +8,9 @@
 #include <signal.h>
 #include <unistd.h>
 #include <syslog.h>
+#include<sys/wait.h> 
+
+
 
 
 
@@ -16,16 +19,8 @@ void displayPrompt();
 void take_commands(char input[]);
 void do_work(char inp[]);
 
+void pwd_function();
 
-char list_of_commands[10][10]={
-
- "ls",
- "cd",
- "pwd",
- "pinfo",
- "echo", 
- "history"
- };
 
 
 

@@ -32,7 +32,7 @@ void do_work(char inp[])
 		char *secondary_2;
 		char *parts = strtok_r(command, " ", &secondary_2);
 		int arg = 0;
-		printf("this is a new command coming \n");
+		// printf("this is a new command coming \n");
 		char data[100][10];
 		while (parts != NULL)
 		{
@@ -56,6 +56,48 @@ void do_work(char inp[])
 		for(int i = 0 ; i<arg ; i++)
 		{
 			printf("%s\n", data[i]);
+		}
+		//  now  we run a loop to identify which command it is,  
+		if(!strcmp(data[0] , "ls") || !strcmp(data[0], "ls\n"))
+		{
+			// command is ls, execute it;
+			continue;
+		}
+		else if(!strcmp(data[0] , "pwd") || !strcmp(data[0], "pwd\n"))
+		{
+			int id = fork();
+			if(id == 0)
+			{
+				pwd_function();
+			}
+			else{
+				fflush(stdin);
+				wait(NULL);
+				continue;
+			}
+		}
+		else if(!strcmp(data[0] , "cd") || !strcmp(data[0], "cd\n"))
+		{
+			// command is cd, pass flags alongside it
+			continue;
+		}
+		else if(!strcmp(data[0] , "pinfo") || !strcmp(data[0], "pinfo\n"))
+		{
+			continue;
+			// command is pinfo, pass the parameter if you have one
+		}
+		else if(!strcmp(data[0] , "history") || !strcmp(data[0], "history\n"))
+		{
+			continue;
+			// command is history, pass parameters if you have them
+		}
+		else if(!strcmp(data[0] , "echo") || !strcmp(data[0], "echo\n"))
+		{
+			continue;
+			// command is echo, pass parameters if you have them
+		}
+		else{
+			printf("command not found. Please check again and come back :)\n");
 		}
 	}
     return ;
