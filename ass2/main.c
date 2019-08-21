@@ -29,7 +29,10 @@ void do_work(char inp[])
 
 	while (command != NULL)
 	{
-		char *secondary_2;
+		char *secondary_2, *copy_of_command;
+		copy_of_command = (char *)malloc((1000)*sizeof(char));
+		strcpy(copy_of_command, command);
+		
 		char *parts = strtok_r(command, " ", &secondary_2);
 		int arg = 0, background_required = 0;
 		// printf("this is a new command coming \n");
@@ -49,7 +52,6 @@ void do_work(char inp[])
 			{
 				background_required = 1;
 			}
-			// printf("%s\n", parts);
 			if(strcmp(parts, "\n")!=0)
 				{strcpy(data[arg],  parts);
 				arg++;}
@@ -79,7 +81,7 @@ void do_work(char inp[])
 		}
 		else if(!strcmp(data[0] , "echo") || !strcmp(data[0], "echo\n"))
 		{
-			// continue;
+			echo_function(copy_of_command, background_required); // that's the entire command that we got, so that whatever spaces are there, they can be accounted there and then
 		}
 		else
 		{

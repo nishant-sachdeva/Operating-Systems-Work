@@ -24,6 +24,7 @@ void  parse(char *line, char **argv);
 
 void pwd_function();
 
+void echo_function(char *command, int background);
 
 
 
