@@ -31,7 +31,7 @@ void do_work(char inp[])
 	{
 		char *secondary_2;
 		char *parts = strtok_r(command, " ", &secondary_2);
-		int arg = 0;
+		int arg = 0, background_required = 0;
 		// printf("this is a new command coming \n");
 		char data[100][10];
 		while (parts != NULL)
@@ -45,60 +45,81 @@ void do_work(char inp[])
             {
                 exit(0);
             }
+			if(strcmp(parts, "&") == 0 || strcmp(parts, "&\n") == 0)
+			{
+				background_required = 1;
+			}
+			// printf("%s\n", parts);
+			if(strcmp(parts, "\n")!=0)
+				{strcpy(data[arg],  parts);
+				arg++;}
 
-			strcpy(data[arg],  parts);
-			arg++;
-
-			// idhar what I want is that I have a 2d array jhaan main yeh saara data store kar loon
 			parts = strtok_r(NULL, " ", &secondary_2);
 		}
-		command = strtok_r(NULL, ";", &secondary);
-		for(int i = 0 ; i<arg ; i++)
-		{
-			printf("%s\n", data[i]);
-		}
-		//  now  we run a loop to identify which command it is,  
+
 		if(!strcmp(data[0] , "ls") || !strcmp(data[0], "ls\n"))
 		{
-			// command is ls, execute it;
-			continue;
+			// continue;
 		}
 		else if(!strcmp(data[0] , "pwd") || !strcmp(data[0], "pwd\n"))
 		{
-			int id = fork();
-			if(id == 0)
-			{
-				pwd_function();
-			}
-			else{
-				fflush(stdin);
-				wait(NULL);
-				continue;
-			}
+			pwd_function(background_required);
 		}
 		else if(!strcmp(data[0] , "cd") || !strcmp(data[0], "cd\n"))
 		{
-			// command is cd, pass flags alongside it
-			continue;
+			// continue;
 		}
 		else if(!strcmp(data[0] , "pinfo") || !strcmp(data[0], "pinfo\n"))
 		{
-			continue;
-			// command is pinfo, pass the parameter if you have one
+			// continue;
 		}
 		else if(!strcmp(data[0] , "history") || !strcmp(data[0], "history\n"))
 		{
-			continue;
-			// command is history, pass parameters if you have them
+			// continue;
 		}
 		else if(!strcmp(data[0] , "echo") || !strcmp(data[0], "echo\n"))
 		{
-			continue;
-			// command is echo, pass parameters if you have them
+			// continue;
 		}
-		else{
-			printf("command not found. Please check again and come back :)\n");
+		else
+		{
+			// printf("here for execvp\n");
+			char *argv[100];
+			for(int i = 0 ; i<arg ; i++)
+			{
+				argv[i]=(char *)malloc((100)*sizeof(char));
+				if(data[i][strlen(data[i])-1] =='\n')
+					data[i][strlen(data[i])-1] = '\0';
+				strcpy(argv[i], data[i]);
+				// printf("hi\n");
+			}
+			argv[arg]=(char *)malloc((100)*sizeof(char));
+			argv[arg]  = NULL;
+			// printf("copy ho gya\n");
+			// I mean I still have a command right?
+			/* below code is for executing this weird command*/
+			pid_t pid;
+			int status;
+			if((pid = fork()) < 0)
+			{
+				printf("forking failed\n");
+			}
+			else if(pid == 0)
+			{
+				if( execvp(*argv, argv) < 0)
+				{
+					printf("Error : %s  failed!\n", data[0]);
+					exit(1);
+				}
+			}
+			else
+			{
+				while(wait(&status) != pid);
+			}
 		}
+
+		// now go to the next command
+		command = strtok_r(NULL, ";", &secondary);
 	}
     return ;
 }
@@ -111,37 +132,7 @@ void displayPrompt()
 	char path[1024];
 	get_path(path);
 
-	// we will check what the path is
-	if(strcmp(home_path, path) == 0)
-	{
-		char arr[] = "~";
-		strcpy(path, arr);
-	}
-	else
-	{
-		// now we will give the relative path
-		if(strlen(path) > strlen(home_path))
-		{
-			// now we construct the relative path
-			char tilda[] = "~";
-			char * rel;
-			rel = strtok(path, home_path);
-			strncat(tilda, rel, strlen(path) - strlen(home_path));
-			strcpy(path, tilda);
-
-		}
-		else
-		{
-			char rev[1024];
-			int len = strlen(path);
-			for(int i = len; i>= 0 ; i--)
-			{
-				rev[i] = path[len - 1 - i];
-			}
-			char * p = strtok(rev, "/");
-			strcpy(path, p);
-		}
-	}
+	fill_path(path);
 
 	getlogin_r(username, sizeof(username));
 	gethostname(sysname, sizeof(sysname)); 
@@ -160,4 +151,40 @@ void take_commands(char inp[])
 void get_path(char arr[])
 {
 	getcwd(arr, 1024);
+}
+
+
+void fill_path(char path[])
+{
+	if(strcmp(home_path, path) == 0)
+	{
+		char arr[] = "~";
+		strcpy(path, arr);
+	}
+	else
+	{
+		// now we will give the relative path
+		if(strlen(path) > strlen(home_path))
+		{
+			// now we construct the relative path
+			char tilda[] = "~";
+			char * rel;
+			rel = strtok(path, home_path);
+			strncat(tilda, rel, strlen(path) - strlen(home_path));
+			strcpy(path, tilda);
+
+		}
+		// else
+		// {
+		// 	char rev[1024];
+		// 	int len = strlen(path);
+		// 	for(int i = len; i>= 0 ; i--)
+		// 	{
+		// 		rev[i] = path[len - 1 - i];
+		// 	}
+		// 	char * p = strtok(rev, "/");
+		// 	strcpy(path, p);
+		// }
+	}
+	return ;
 }

@@ -18,6 +18,9 @@ void get_path(char arr[]);
 void displayPrompt();
 void take_commands(char input[]);
 void do_work(char inp[]);
+void fill_path(char path[]);
+void  parse(char *line, char **argv);
+
 
 void pwd_function();
 
