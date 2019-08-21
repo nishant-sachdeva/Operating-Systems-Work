@@ -52,9 +52,11 @@ void do_work(char inp[])
 			{
 				background_required = 1;
 			}
-			if(strcmp(parts, "\n")!=0)
-				{strcpy(data[arg],  parts);
-				arg++;}
+			if(strcmp(parts, "\n") !=0 && background_required == 0 )
+			{
+				strcpy(data[arg],  parts);
+				arg++;
+			}
 
 			parts = strtok_r(NULL, " ", &secondary_2);
 		}
@@ -113,10 +115,15 @@ void do_work(char inp[])
 					printf("Error : %s  failed!\n", data[0]);
 					exit(1);
 				}
+				printf("NISHANT\n");
+				exit(0);
 			}
 			else
 			{
-				while(wait(&status) != pid);
+				if(background_required != 1)
+				{
+					wait(NULL);
+				}
 			}
 		}
 
@@ -176,17 +183,6 @@ void fill_path(char path[])
 			strcpy(path, tilda);
 
 		}
-		// else
-		// {
-		// 	char rev[1024];
-		// 	int len = strlen(path);
-		// 	for(int i = len; i>= 0 ; i--)
-		// 	{
-		// 		rev[i] = path[len - 1 - i];
-		// 	}
-		// 	char * p = strtok(rev, "/");
-		// 	strcpy(path, p);
-		// }
 	}
 	return ;
 }
