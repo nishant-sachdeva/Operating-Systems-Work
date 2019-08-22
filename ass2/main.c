@@ -69,6 +69,7 @@ void do_work(char inp[])
 		{
 			pwd_function(background_required);
 		}
+		
 		else if(!strcmp(data[0] , "cd") || !strcmp(data[0], "cd\n"))
 		{
 			char *argv[100];
@@ -78,27 +79,41 @@ void do_work(char inp[])
 				if(data[i][strlen(data[i])-1] =='\n')
 					data[i][strlen(data[i])-1] = '\0';
 				strcpy(argv[i], data[i]);
-				// printf("hi\n");
 			}
 			argv[arg]=(char *)malloc((100)*sizeof(char));
 			argv[arg]  = NULL;
-			// so now I have this thing 
-			// int id = fork();
-			// int status;
-			// if(id == 0)
-			// {
-				cd_function(argv, arg, home_path);
-				// exit(0);
-			// }
-			// else
-			// {
-				// (void)waitpid(id, &status, 0);				
-			// }
-			
+			cd_function(argv, arg, home_path);			
 		}
+
 		else if(!strcmp(data[0] , "pinfo") || !strcmp(data[0], "pinfo\n"))
 		{
-			// continue
+			char *argv[100];
+			for(int i = 0 ; i<arg ; i++)
+			{
+				argv[i]=(char *)malloc((100)*sizeof(char));
+				if(data[i][strlen(data[i])-1] =='\n')
+					data[i][strlen(data[i])-1] = '\0';
+				strcpy(argv[i], data[i]);
+			}
+			argv[arg]=(char *)malloc((100)*sizeof(char));
+			argv[arg]  = NULL;
+
+			pid_t pid;
+			int status;
+			if((pid = fork()) < 0)
+			{
+				printf("forking failed\n");
+			}
+			else if(pid == 0)
+			{
+				pinfo_function(argv, arg);				
+				exit(0);
+			}
+			else
+			{
+				
+				(void)waitpid(pid, &status, 0);
+			}			
 		}
 		else if(!strcmp(data[0] , "history") || !strcmp(data[0], "history\n"))
 		{
@@ -110,7 +125,6 @@ void do_work(char inp[])
 		}
 		else
 		{
-			// printf("here for execvp\n");
 			char *argv[100];
 			for(int i = 0 ; i<arg ; i++)
 			{
@@ -118,13 +132,11 @@ void do_work(char inp[])
 				if(data[i][strlen(data[i])-1] =='\n')
 					data[i][strlen(data[i])-1] = '\0';
 				strcpy(argv[i], data[i]);
-				// printf("hi\n");
 			}
+
 			argv[arg]=(char *)malloc((100)*sizeof(char));
 			argv[arg]  = NULL;
-			// printf("copy ho gya\n");
-			// I mean I still have a command right?
-			/* below code is for executing this weird command*/
+
 			pid_t pid;
 			int status;
 			if((pid = fork()) < 0)

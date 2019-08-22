@@ -29,7 +29,7 @@ void echo_function(char *command, int background);
 
 void cd_function(char **argv, int arg, char arr[]);
 
-
+void pinfo_function(char ** argv, int args);
 
 
 int main();
