@@ -64,4 +64,5 @@ void pinfo_function(char ** argv, int args)
 
     printf("Executable Path -- %s\n", path_exe);
 
+    return;
 }
