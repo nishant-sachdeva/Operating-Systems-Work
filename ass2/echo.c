@@ -5,6 +5,7 @@ void echo_function(char *command  , int background)
 {
     // okay, so I have the command
     int id = fork();
+    int status;
     if(id == 0)
     {
         // char * token = strtok(command, "\"");
@@ -43,10 +44,7 @@ void echo_function(char *command  , int background)
     }
     else
     {
-        if(background == 0)
-        {
-            wait(NULL);
-        }
+		(void)waitpid(id, &status, 0);
     }
     
     return;

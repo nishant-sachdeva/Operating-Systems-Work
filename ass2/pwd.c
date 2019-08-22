@@ -3,6 +3,7 @@
 void pwd_function(int background)
 {
     int id = fork();
+    int status;
     
     // okay process yhaan separate hain
     if(id == 0)
@@ -25,11 +26,7 @@ void pwd_function(int background)
     else
     {
         // ab hum parent mein hain
-        if(background == 0)
-        {
-            // yaani wait karna hai
-            wait(NULL);
-        }
+        (void)waitpid(id, &status, 0);
     }
 
     return ;

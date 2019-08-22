@@ -20,11 +20,15 @@ void take_commands(char input[]);
 void do_work(char inp[]);
 void fill_path(char path[]);
 void  parse(char *line, char **argv);
+int substring(char arr1[], char arr2[]);
 
 
 void pwd_function();
 
 void echo_function(char *command, int background);
+
+void cd_function(char **argv, int arg, char arr[]);
+
 
 
 

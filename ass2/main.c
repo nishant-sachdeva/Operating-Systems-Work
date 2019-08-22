@@ -61,21 +61,44 @@ void do_work(char inp[])
 			parts = strtok_r(NULL, " ", &secondary_2);
 		}
 
-		if(!strcmp(data[0] , "ls") || !strcmp(data[0], "ls\n"))
-		{
-			// continue;
-		}
-		else if(!strcmp(data[0] , "pwd") || !strcmp(data[0], "pwd\n"))
+		// if(!strcmp(data[0] , "ls") || !strcmp(data[0], "ls\n"))
+		// {
+		// 	// continue;
+		// }
+		if(!strcmp(data[0] , "pwd") || !strcmp(data[0], "pwd\n"))
 		{
 			pwd_function(background_required);
 		}
 		else if(!strcmp(data[0] , "cd") || !strcmp(data[0], "cd\n"))
 		{
-			// continue;
+			char *argv[100];
+			for(int i = 0 ; i<arg ; i++)
+			{
+				argv[i]=(char *)malloc((100)*sizeof(char));
+				if(data[i][strlen(data[i])-1] =='\n')
+					data[i][strlen(data[i])-1] = '\0';
+				strcpy(argv[i], data[i]);
+				// printf("hi\n");
+			}
+			argv[arg]=(char *)malloc((100)*sizeof(char));
+			argv[arg]  = NULL;
+			// so now I have this thing 
+			// int id = fork();
+			// int status;
+			// if(id == 0)
+			// {
+				cd_function(argv, arg, home_path);
+				// exit(0);
+			// }
+			// else
+			// {
+				// (void)waitpid(id, &status, 0);				
+			// }
+			
 		}
 		else if(!strcmp(data[0] , "pinfo") || !strcmp(data[0], "pinfo\n"))
 		{
-			// continue;
+			// continue
 		}
 		else if(!strcmp(data[0] , "history") || !strcmp(data[0], "history\n"))
 		{
@@ -115,15 +138,12 @@ void do_work(char inp[])
 					printf("Error : %s  failed!\n", data[0]);
 					exit(1);
 				}
-				printf("NISHANT\n");
 				exit(0);
 			}
 			else
 			{
-				if(background_required != 1)
-				{
-					wait(NULL);
-				}
+				
+				(void)waitpid(pid, &status, 0);
 			}
 		}
 
@@ -172,17 +192,33 @@ void fill_path(char path[])
 	}
 	else
 	{
-		// now we will give the relative path
 		if(strlen(path) > strlen(home_path))
-		{
-			// now we construct the relative path
-			char tilda[] = "~";
-			char * rel;
-			rel = strtok(path, home_path);
-			strncat(tilda, rel, strlen(path) - strlen(home_path));
-			strcpy(path, tilda);
-
-		}
+			if(substring(path, home_path)==1)
+			{
+				printf("substring hai\n");
+				char tilda[1024] = "~/";
+				strncat(tilda, (path + strlen(home_path)+1), strlen(path) - strlen(home_path) - 1);
+				strcpy(path, tilda);
+			}
 	}
 	return ;
+}
+
+
+int substring(char arr1[], char arr2[])
+{
+	// to check if arr2 is a substring of another arr1
+	int i, j=0, k;
+  	for(i=0; arr1[i]; i++)
+  	{
+    	if(arr1[i] == arr2[j])
+    	{
+      		for(k=i, j=0; arr1[k] && arr2[j]; j++, k++)
+        		if(arr1[k]!=arr2[j])
+            		break;
+       		if(!arr2[j])
+        		return 1;
+    	}
+  	}
+  return 0;
 }
