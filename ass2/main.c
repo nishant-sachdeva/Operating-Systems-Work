@@ -32,6 +32,8 @@ void do_work(char inp[])
 		char *secondary_2, *copy_of_command;
 		copy_of_command = (char *)malloc((1000)*sizeof(char));
 		strcpy(copy_of_command, command);
+
+		add_to_history(copy_of_command);
 		
 		char *parts = strtok_r(command, " ", &secondary_2);
 		int arg = 0, background_required = 0;
@@ -141,7 +143,21 @@ void do_work(char inp[])
 		}
 		else if(!strcmp(data[0] , "history") || !strcmp(data[0], "history\n"))
 		{
-			// continue;
+			pid_t pid;
+			int status;
+			if((pid = fork()) < 0)
+			{
+				printf("forking failed\n");
+			}
+			else if(pid == 0)
+			{
+				history_function(copy_of_command);
+				exit(0);
+			}
+			else
+			{
+				(void)waitpid(pid, &status, 0);
+			}
 		}
 		else if(!strcmp(data[0] , "echo") || !strcmp(data[0], "echo\n"))
 		{

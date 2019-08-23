@@ -36,5 +36,9 @@ void pinfo_function(char ** argv, int args);
 
 void ls_function(char **argv , int args, char home_path[]);
 
+void history_function(char * argv);
+
+void add_to_history(char *  arr);
+
 
 int main();

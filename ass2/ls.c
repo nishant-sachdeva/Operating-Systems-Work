@@ -121,8 +121,9 @@ void ls_function(char ** argv, int args, char home_path[])
 
                 // now we will get the time details
                 char * times = (char*)malloc(50*sizeof(char));
-                // strftime(times, 50, "%d/%m/%y %I:%M %p", localtime(&(data.st_ctime)));
                 times = ctime(&data.st_atime);
+                
+                // now we will get size details
                 long long int size = data.st_size;
 
                 // okay, so now we have all we need
