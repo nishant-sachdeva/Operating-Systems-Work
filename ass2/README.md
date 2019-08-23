@@ -1,8 +1,34 @@
-The task is to start making a shell on our own. We will need various system commands for this task.
+Shell in C
 
-In the following section, we will attend the tute and take notes on whatever the TA teaches:.....HANG IN THERE...:)
+This is an implementation of a basic interactive shell done in C as an assignment for our Operating Systems course.
+Running the code
 
+    Download the repository as a zip, or clone it. cd into directory
+    Run ./makefile . Ignore any warnings shown.
 
-use the man pages and the man 2 pages for these system calls
+    run ./a.out
 
-Fork() , getpid() , wait(), exexlp();
+In order to exit the shell, type exit
+
+Requirements as specified
+Minimum requirements to be met:
+
+    Display requirement < username@systemname:path/to/whereever>
+
+    Builtins: ls, echo, cd, pwd. Don't use execvp.
+
+    Make an ls functionality to enable: -l, -a, -al/la
+
+    Option to execute system command, like the ones in /bin/. Implement foreground, background processes. Should have arguments.
+
+    pinfo. Prints information related to the running shell program process.
+
+    pinfo pid should print the process related information about the process with pid.
+
+    Print correct information about the background process exiting safely.
+
+Stuff to note:
+
+    Usage of system is strictly prohibited.
+    Get error handling right
+    rollnum_assgn2.tar.gz
