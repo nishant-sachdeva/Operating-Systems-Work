@@ -3,18 +3,10 @@
 
 void echo_function(char *command  , int background)
 {
-    // okay, so I have the command
     int id = fork();
     int status;
     if(id == 0)
     {
-        // char * token = strtok(command, "\"");
-        // while(token != NULL)
-        // {
-        //     token = strtok(NULL, "\"");
-        //     if(token)
-        //         printf("%s", token);
-        // }
 
         char * first_part = strdup(command);
         char * token = strsep(&first_part, "\"");
@@ -45,6 +37,25 @@ void echo_function(char *command  , int background)
     else
     {
 		(void)waitpid(id, &status, 0);
+        if(background == 1)
+				{
+					if(WIFEXITED(status))
+					{
+						printf("pid = %d exited, status = %d\n",pid, WEXITSTATUS(status));
+					}
+					else if(WIFCONTINUED(status))
+					{
+						printf("continued\n");
+					}
+					else if (WIFSIGNALED(status))
+					{
+						printf("pid = %d killed by %d\n", pid, WTERMSIG(status));
+					}
+					else if(WIFSTOPPED(status))
+					{
+						printf("pid = %d stopped by %d\n",pid, WTERMSIG(status));
+					}
+				}
     }
     
     return;

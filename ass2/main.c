@@ -61,10 +61,52 @@ void do_work(char inp[])
 			parts = strtok_r(NULL, " ", &secondary_2);
 		}
 
-		// if(!strcmp(data[0] , "ls") || !strcmp(data[0], "ls\n"))
-		// {
-		// 	// continue;
-		// }
+		if(!strcmp(data[0] , "ls") || !strcmp(data[0], "ls\n"))
+		{
+			char *argv[100];
+			for(int i = 0 ; i<arg ; i++)
+			{
+				argv[i]=(char *)malloc((100)*sizeof(char));
+				if(data[i][strlen(data[i])-1] =='\n')
+					data[i][strlen(data[i])-1] = '\0';
+				strcpy(argv[i], data[i]);
+			}
+			argv[arg]=(char *)malloc((100)*sizeof(char));
+			argv[arg]  = NULL;
+
+			pid_t pid;
+			int status;
+			if((pid = fork()) < 0)
+			{
+				printf("forking failed\n");
+			}
+			else if(pid == 0)
+			{
+				ls_function(argv, arg);				
+				exit(0);
+			}
+			else
+			{
+				(void)waitpid(pid, &status, 0);
+
+				if(WIFEXITED(status))
+				{
+					printf("exited, status = %d\n", WEXITSTATUS(status));
+				}
+				else if(WIFCONTINUED(status))
+				{
+					printf("continued\n");
+				}
+				else if (WIFSIGNALED(status))
+				{
+					printf("killed by %d\n", WTERMSIG(status));
+				}
+				else if(WIFSTOPPED(status))
+				{
+					printf("stopped by %d\n", WTERMSIG(status));
+				}	
+			}			
+		}
 		if(!strcmp(data[0] , "pwd") || !strcmp(data[0], "pwd\n"))
 		{
 			pwd_function(background_required);
@@ -242,7 +284,7 @@ void fill_path(char path[])
 		if(strlen(path) > strlen(home_path))
 			if(substring(path, home_path)==1)
 			{
-				printf("substring hai\n");
+				// printf("substring hai\n");
 				char tilda[1024] = "~/";
 				strncat(tilda, (path + strlen(home_path)+1), strlen(path) - strlen(home_path) - 1);
 				strcpy(path, tilda);
