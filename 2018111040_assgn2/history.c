@@ -2,9 +2,13 @@
 
 char command[100][100];
 
+char home[1024];
+char rep[1024];
+
 
 int get_count(){
-    FILE * lines = fopen("/home/nishu/nishant/sem3/Operating-Systems-Work/ass2/.history", "r");
+
+    FILE * lines = fopen(home, "r");
     //read file into array
     int count = 0;
     char c;
@@ -17,10 +21,11 @@ int get_count(){
 }
 
 
-void history_function(char *argv)
+void history_function(char *argv, char home_path[])
 {
+    update(home_path);
     FILE *myFile, *lines;
-    myFile = fopen("/home/nishu/nishant/sem3/Operating-Systems-Work/ass2/.history", "r");
+    myFile = fopen(home, "r");
     // printf("file open hui\n");
     int count = get_count()/2;
     // printf("count is : %d\n", count);
@@ -35,15 +40,17 @@ void history_function(char *argv)
 
 
 
-void add_to_history(char * command)
+void add_to_history(char * command, char home_path[])
 {
-    FILE * file = fopen("/home/nishu/nishant/sem3/Operating-Systems-Work/ass2/.history", "a");
+    update(home_path);
+
+    FILE * file = fopen(home, "a");
     int count  = get_count();
     strcat(command,  "\n");
     if((count) <= 38)
     {
         // printf("%d\n", count);
-        FILE * f = fopen("/home/nishu/nishant/sem3/Operating-Systems-Work/ass2/.history", "a");
+        FILE * f = fopen(home, "a");
         // printf("command to be appended is %s", command);
         fprintf(f, "%s", command);
         fclose(f);
@@ -55,13 +62,13 @@ void add_to_history(char * command)
         // printf("count has reached 20, we are deleting 2 \n");
 
 
-        FILE * f = fopen("/home/nishu/nishant/sem3/Operating-Systems-Work/ass2/.history", "a");
+        FILE * f = fopen(home, "a");
         // printf("command to be appended is %s", command);
         fprintf(f, "%s", command);
         fclose(f);
 
-                FILE *  file1 = fopen("/home/nishu/nishant/sem3/Operating-Systems-Work/ass2/.history", "r");
-        FILE * file2  = fopen("/home/nishu/nishant/sem3/Operating-Systems-Work/ass2/.replica", "w");
+        FILE *  file1 = fopen(home, "r");
+        FILE * file2  = fopen(rep, "w");
         // append command in file, and then move everything up by one step;
         int temp =  1;
         for(char c = getc(file1); c!= EOF ; c = getc(file1))
@@ -82,5 +89,20 @@ void add_to_history(char * command)
         return ;
     }
     
+
+}
+
+
+
+void update(char home_path[])
+{
+    strcpy(home, home_path);
+    strcat(home , "/");
+    strcpy(rep , home);
+    strcat(home, ".history");
+
+    strcat(rep, ".replica");
+
+    return;
 
 }

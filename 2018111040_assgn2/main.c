@@ -23,17 +23,21 @@ int main()
 
 void do_work(char inp[])
 {
+	// printf("do work mein aa gya\n");
 
 	char *secondary;
 	char *command = strtok_r(inp, ";", &secondary);
 
 	while (command != NULL)
 	{
+		// printf("command read ho gyi\n");
 		char *secondary_2, *copy_of_command;
 		copy_of_command = (char *)malloc((1000)*sizeof(char));
 		strcpy(copy_of_command, command);
 
-		add_to_history(copy_of_command);
+		add_to_history(copy_of_command, home_path);
+
+		// printf("history read karni hai\n");
 		
 		char *parts = strtok_r(command, " ", &secondary_2);
 		int arg = 0, background_required = 0;
@@ -43,7 +47,8 @@ void do_work(char inp[])
 		{
             // now, the entire string is one command, 
             // identify if it is valid, if yes, do the needful, else, exit with some error message and go on to the next
-
+			// printf("parts mein aa gye\n");
+			// printf("%s\n", parts);
             char arr[] = "exit\n";
 
             if(strcmp(parts, "exit") == 0 || strcmp(parts,"exit\n")== 0)
@@ -151,7 +156,7 @@ void do_work(char inp[])
 			}
 			else if(pid == 0)
 			{
-				history_function(copy_of_command);
+				history_function(copy_of_command, home_path);
 				exit(0);
 			}
 			else
