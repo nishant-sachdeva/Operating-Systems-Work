@@ -82,32 +82,15 @@ void do_work(char inp[])
 			}
 			else if(pid == 0)
 			{
-				ls_function(argv, arg);				
+				ls_function(argv, arg, home_path);				
 				exit(0);
 			}
 			else
 			{
 				(void)waitpid(pid, &status, 0);
-
-				if(WIFEXITED(status))
-				{
-					printf("exited, status = %d\n", WEXITSTATUS(status));
-				}
-				else if(WIFCONTINUED(status))
-				{
-					printf("continued\n");
-				}
-				else if (WIFSIGNALED(status))
-				{
-					printf("killed by %d\n", WTERMSIG(status));
-				}
-				else if(WIFSTOPPED(status))
-				{
-					printf("stopped by %d\n", WTERMSIG(status));
-				}	
 			}			
 		}
-		if(!strcmp(data[0] , "pwd") || !strcmp(data[0], "pwd\n"))
+		else if(!strcmp(data[0] , "pwd") || !strcmp(data[0], "pwd\n"))
 		{
 			pwd_function(background_required);
 		}
@@ -154,23 +137,6 @@ void do_work(char inp[])
 			else
 			{
 				(void)waitpid(pid, &status, 0);
-
-				if(WIFEXITED(status))
-				{
-					printf("exited, status = %d\n", WEXITSTATUS(status));
-				}
-				else if(WIFCONTINUED(status))
-				{
-					printf("continued\n");
-				}
-				else if (WIFSIGNALED(status))
-				{
-					printf("killed by %d\n", WTERMSIG(status));
-				}
-				else if(WIFSTOPPED(status))
-				{
-					printf("stopped by %d\n", WTERMSIG(status));
-				}	
 			}			
 		}
 		else if(!strcmp(data[0] , "history") || !strcmp(data[0], "history\n"))

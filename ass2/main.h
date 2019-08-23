@@ -16,6 +16,7 @@
 
 
 
+
 void get_path(char arr[]);
 void displayPrompt();
 void take_commands(char input[]);
@@ -33,7 +34,7 @@ void cd_function(char **argv, int arg, char arr[]);
 
 void pinfo_function(char ** argv, int args);
 
-void ls_function(char **argv , int args);
+void ls_function(char **argv , int args, char home_path[]);
 
 
 int main();
