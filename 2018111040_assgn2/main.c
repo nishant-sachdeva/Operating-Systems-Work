@@ -24,6 +24,7 @@ int main()
 void do_work(char inp[])
 {
 	// printf("do work mein aa gya\n");
+	add_to_history(inp, home_path);
 
 	char *secondary;
 	char *command = strtok_r(inp, ";", &secondary);
@@ -35,7 +36,6 @@ void do_work(char inp[])
 		copy_of_command = (char *)malloc((1000)*sizeof(char));
 		strcpy(copy_of_command, command);
 
-		add_to_history(copy_of_command, home_path);
 
 		// printf("history read karni hai\n");
 		
@@ -47,7 +47,7 @@ void do_work(char inp[])
 		{
             // now, the entire string is one command, 
             // identify if it is valid, if yes, do the needful, else, exit with some error message and go on to the next
-			// printf("parts mein aa gye\n");
+			// printf("parts mein aa gyeis\n");
 			// printf("%s\n", parts);
             char arr[] = "exit\n";
 
@@ -148,6 +148,17 @@ void do_work(char inp[])
 		}
 		else if(!strcmp(data[0] , "history") || !strcmp(data[0], "history\n"))
 		{
+			char *argv[100];
+			for(int i = 0 ; i<arg ; i++)
+			{
+				argv[i]=(char *)malloc((100)*sizeof(char));
+				if(data[i][strlen(data[i])-1] =='\n')
+					data[i][strlen(data[i])-1] = '\0';
+				strcpy(argv[i], data[i]);
+			}
+			argv[arg]=(char *)malloc((100)*sizeof(char));
+			argv[arg]  = NULL;
+
 			pid_t pid;
 			int status;
 			if((pid = fork()) < 0)
@@ -156,7 +167,7 @@ void do_work(char inp[])
 			}
 			else if(pid == 0)
 			{
-				history_function(copy_of_command, home_path);
+				history_function(argv, home_path , arg);
 				exit(0);
 			}
 			else

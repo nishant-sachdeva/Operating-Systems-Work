@@ -21,19 +21,43 @@ int get_count(){
 }
 
 
-void history_function(char *argv, char home_path[])
+void history_function(char *argv[100], char home_path[], int arg)
 {
+    int number = 0;
+    if(arg == 1)
+        number = 10;
+    else if(arg == 2)
+        number = argv[1][0] - '0';
     update(home_path);
     FILE *myFile, *lines;
     myFile = fopen(home, "r");
     // printf("file open hui\n");
-    int count = get_count()/2;
+    int count = get_count();
     // printf("count is : %d\n", count);
-    for (int i = 0; i < count ; i++)
+    if(count <= number)
     {
-        fscanf(myFile, "%s", command[i]);
-        printf("%d : %s\n",i+1, command[i]);
+        for (int i = 0; i < count ; i++)
+        {
+            fscanf(myFile, "%[^\n]",command[i]);
+            char ch = getc(myFile);
+            printf("%d : %s\n",i+1, command[i]);
+        }
     }
+    else
+    {
+        // assuming count  >= 10
+        for(int i = 1 ; i<=count ; i++)
+        {
+            fscanf(myFile, "%[^\n]",command[i]);
+            char ch = getc(myFile);
+            // printf("count bigger than  1o  %d\n", count);
+            if(i > (count-number))
+            {
+                printf("%d : %s\n",i-(count-number), command[i]);
+            }            
+        }
+    }
+    
     fclose(myFile);
     fclose(lines);
 }
@@ -42,12 +66,16 @@ void history_function(char *argv, char home_path[])
 
 void add_to_history(char * command, char home_path[])
 {
+
+    // printf("command coming is  %s\n", command);
     update(home_path);
 
     FILE * file = fopen(home, "a");
     int count  = get_count();
-    strcat(command,  "\n");
-    if((count) <= 38)
+    // if(command[strlen(command)] == '\n');
+    // else
+    //     strcat(command,  "\n");
+    if((count) <= 19)
     {
         // printf("%d\n", count);
         FILE * f = fopen(home, "a");
@@ -73,7 +101,7 @@ void add_to_history(char * command, char home_path[])
         int temp =  1;
         for(char c = getc(file1); c!= EOF ; c = getc(file1))
         {
-            if(temp != 1 && temp != 2)
+            if(temp != 1)
             {
                 putc(c, file2);
             }
@@ -84,8 +112,8 @@ void add_to_history(char * command, char home_path[])
         fclose(file2);
         
 
-        remove("/home/nishu/nishant/sem3/Operating-Systems-Work/ass2/.history");
-        rename("/home/nishu/nishant/sem3/Operating-Systems-Work/ass2/.replica", "/home/nishu/nishant/sem3/Operating-Systems-Work/ass2/.history");
+        remove(home);
+        rename(rep, home);
         return ;
     }
     

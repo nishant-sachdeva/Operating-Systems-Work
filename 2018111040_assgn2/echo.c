@@ -14,6 +14,8 @@ void echo_function(char *command  , int background)
         if(first_part == NULL)
         {
             // means no semi colon do simple strtok printing
+            command[strlen(command)-1] = '\0';
+            // this is to remove the last line out of the input string
             char * tokenn =  strtok(command, " ");
             while(tokenn  != NULL)
             {
