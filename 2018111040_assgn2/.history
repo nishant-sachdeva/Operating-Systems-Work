@@ -64,3 +64,61 @@ c
 
 exit
 
+ls
+
+clear
+
+exit
+
+clear
+
+exit
+
+ls
+
+clear
+
+mkdir folder
+
+cd foler
+
+cd folder
+
+ls
+
+cd  ..
+
+ls
+
+clear
+
+exit
+
+ls
+
+mkdir folder
+
+cd folder
+
+cd  ..
+
+rmdir folder
+
+clear
+
+exit
+
+ls
+
+clear
+
+ls -la
+
+clear
+
+ls -a
+
+ls -l
+
+code ls.c
+
