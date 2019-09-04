@@ -30,7 +30,7 @@ void cd_function(char ** argv, int arg, char home_path[])
     if(chdir(path) != 0)
         perror("");
     char arr[1024];
-     get_path(arr);
+    get_path(arr);
 
     return;
 }

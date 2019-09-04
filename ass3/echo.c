@@ -24,6 +24,7 @@ void echo_function(char *command  , int background)
                     printf("%s ",tokenn);
             }
             printf("\b");
+            printf("\n");
         }
         else
         {
