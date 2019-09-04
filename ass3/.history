@@ -1,20 +1,20 @@
+ls
+cat echo.c
 clear
-exit
-history
+cat echo.c | wc
 clear
-s
+ls
 exit
-sl
+ls
+clear
+ls
+cd ih
+clear
+ls[3~
 c
 clear
 ls
-ans
-./a.out
-cat echo.c
+pinfo
 clear
-clear
+ls
 exit
-c
-exit
-exit
-exit 

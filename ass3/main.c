@@ -31,56 +31,50 @@ void do_work(char inp[])
 
 	while (command != NULL)
 	{
-		// printf("command read ho gyi\n");
+		// command has been read
 		char *secondary_2, *copy_of_command;
 		copy_of_command = (char *)malloc((1000)*sizeof(char));
 		strcpy(copy_of_command, command);
-
-
-		// printf("history read karni hai\n");
+		// created a copy of command because aageh jaake this is gonna be lost in strtok
 		
 		char *parts = strtok_r(command, " ", &secondary_2);
 		int arg = 0, background_required = 0;
-		// printf("this is a new command coming \n");
-		char data[100][10];
+
+		char * argv[100];
 		while (parts != NULL)
 		{
             // now, the entire string is one command, 
             // identify if it is valid, if yes, do the needful, else, exit with some error message and go on to the next
-			// printf("parts mein aa gyeis\n");
-			// printf("%s\n", parts);
-            char arr[] = "exit\n";
 
             if(strcmp(parts, "exit") == 0 || strcmp(parts,"exit\n")== 0)
             {
                 exit(0);
             }
+			// exit if command is exit
 			if(strcmp(parts, "&") == 0 || strcmp(parts, "&\n") == 0)
 			{
 				background_required = 1;
 			}
+			// mark background as 1 if required
+
 			if(strcmp(parts, "\n") !=0 && background_required == 0 )
 			{
-				strcpy(data[arg],  parts);
+				argv[arg]=(char *)malloc((100)*sizeof(char));
+				if(parts[strlen(parts)-1] =='\n')
+					parts[strlen(parts)-1] = '\0';
+				strcpy(argv[arg], parts);
 				arg++;
 			}
 
 			parts = strtok_r(NULL, " ", &secondary_2);
 		}
+		argv[arg]=(char *)malloc((100)*sizeof(char));
+		argv[arg]  = NULL;
 
-		if(!strcmp(data[0] , "ls") || !strcmp(data[0], "ls\n"))
+		// so here is the deal, the data 2d array already has the command input, and now for every commmand we are busy trying to get it into one big 2d array, and honestly, I don't think we are doing a very great job !
+
+		if(!strcmp(argv[0] , "ls") || !strcmp(argv[0], "ls\n"))
 		{
-			char *argv[100];
-			for(int i = 0 ; i<arg ; i++)
-			{
-				argv[i]=(char *)malloc((100)*sizeof(char));
-				if(data[i][strlen(data[i])-1] =='\n')
-					data[i][strlen(data[i])-1] = '\0';
-				strcpy(argv[i], data[i]);
-			}
-			argv[arg]=(char *)malloc((100)*sizeof(char));
-			argv[arg]  = NULL;
-
 			pid_t pid;
 			int status;
 			if((pid = fork()) < 0)
@@ -97,39 +91,18 @@ void do_work(char inp[])
 				(void)waitpid(pid, &status, 0);
 			}			
 		}
-		else if(!strcmp(data[0] , "pwd") || !strcmp(data[0], "pwd\n"))
+		else if(!strcmp(argv[0] , "pwd") || !strcmp(argv[0], "pwd\n"))
 		{
 			pwd_function(background_required);
 		}
 		
-		else if(!strcmp(data[0] , "cd") || !strcmp(data[0], "cd\n"))
+		else if(!strcmp(argv[0] , "cd") || !strcmp(argv[0], "cd\n"))
 		{
-			char *argv[100];
-			for(int i = 0 ; i<arg ; i++)
-			{
-				argv[i]=(char *)malloc((100)*sizeof(char));
-				if(data[i][strlen(data[i])-1] =='\n')
-					data[i][strlen(data[i])-1] = '\0';
-				strcpy(argv[i], data[i]);
-			}
-			argv[arg]=(char *)malloc((100)*sizeof(char));
-			argv[arg]  = NULL;
 			cd_function(argv, arg, home_path);			
 		}
 
-		else if(!strcmp(data[0] , "pinfo") || !strcmp(data[0], "pinfo\n"))
+		else if(!strcmp(argv[0] ,"pinfo") || !strcmp(argv[0],"pinfo\n"))
 		{
-			char *argv[100];
-			for(int i = 0 ; i<arg ; i++)
-			{
-				argv[i]=(char *)malloc((100)*sizeof(char));
-				if(data[i][strlen(data[i])-1] =='\n')
-					data[i][strlen(data[i])-1] = '\0';
-				strcpy(argv[i], data[i]);
-			}
-			argv[arg]=(char *)malloc((100)*sizeof(char));
-			argv[arg]  = NULL;
-
 			pid_t pid;
 			int status;
 			if((pid = fork()) < 0)
@@ -146,19 +119,8 @@ void do_work(char inp[])
 				(void)waitpid(pid, &status, 0);
 			}			
 		}
-		else if(!strcmp(data[0] , "history") || !strcmp(data[0], "history\n"))
+		else if(!strcmp(argv[0] ,"history")||!strcmp(argv[0], "history\n"))
 		{
-			char *argv[100];
-			for(int i = 0 ; i<arg ; i++)
-			{
-				argv[i]=(char *)malloc((100)*sizeof(char));
-				if(data[i][strlen(data[i])-1] =='\n')
-					data[i][strlen(data[i])-1] = '\0';
-				strcpy(argv[i], data[i]);
-			}
-			argv[arg]=(char *)malloc((100)*sizeof(char));
-			argv[arg]  = NULL;
-
 			pid_t pid;
 			int status;
 			if((pid = fork()) < 0)
@@ -175,24 +137,12 @@ void do_work(char inp[])
 				(void)waitpid(pid, &status, 0);
 			}
 		}
-		else if(!strcmp(data[0] , "echo") || !strcmp(data[0], "echo\n"))
+		else if(!strcmp(argv[0] , "echo") || !strcmp(argv[0], "echo\n"))
 		{
 			echo_function(copy_of_command, background_required); // that's the entire command that we got, so that whatever spaces are there, they can be accounted there and then
 		}
 		else
 		{
-			char *argv[100];
-			for(int i = 0 ; i<arg ; i++)
-			{
-				argv[i]=(char *)malloc((100)*sizeof(char));
-				if(data[i][strlen(data[i])-1] =='\n')
-					data[i][strlen(data[i])-1] = '\0';
-				strcpy(argv[i], data[i]);
-			}
-
-			argv[arg]=(char *)malloc((100)*sizeof(char));
-			argv[arg]  = NULL;
-
 			pid_t pid;
 			int status;
 			if((pid = fork()) < 0)
@@ -203,7 +153,7 @@ void do_work(char inp[])
 			{
 				if( execvp(*argv, argv) < 0)
 				{
-					printf("Error : %s  failed!\n", data[0]);
+					printf("Error : %s  failed!\n", argv[0]);
 					exit(1);
 				}
 				exit(0);
