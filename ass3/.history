@@ -1,20 +1,20 @@
-ls
-cat echo.c
-clear
-cat echo.c | wc
+cat echo.c > test.txt
 clear
 ls
-exit
-ls
+cat cd.c ; cat ls.c
 clear
 ls
-cd ih
+cat ls.c >> test.c
 clear
-ls[3~
+ls
+history
+clear
+s
 c
 clear
-ls
-pinfo
+ks
+c
 clear
-ls
+history
+clear
 exit

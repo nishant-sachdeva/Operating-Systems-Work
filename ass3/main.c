@@ -139,7 +139,7 @@ void do_work(char inp[])
 		}
 		else if(!strcmp(argv[0] , "echo") || !strcmp(argv[0], "echo\n"))
 		{
-			echo_function(copy_of_command, background_required); // that's the entire command that we got, so that whatever spaces are there, they can be accounted there and then
+			echo_function(copy_of_command, background_required);
 		}
 		else
 		{
