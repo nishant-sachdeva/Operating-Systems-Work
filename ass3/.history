@@ -1,21 +1,21 @@
-clear
-htop
-exit
-htop
-htop &
-qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
-
+cd ..
+lks
 c
+clear
+ls 
+cd  ..
+cd ass1
+rmdir rand
+ls
+cd .
+cd ..
 ls
 clear
+cd ass3
+history
+history 4
 clear
-e
+lks
 c
-e
-exit
-ls
-vim &
-firefox &
-
 clear
-ls
+exit
