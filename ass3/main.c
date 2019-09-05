@@ -81,121 +81,73 @@ void do_work(char inp[])
 			printf("forking failed\n");
 		}
 		// yhaan fork  ho gya hai, right, now we will execute all the commands;
-		if(argv[0] != NULL) // cuz null seh comparison gives us a seg fault
+
+		if(pid == 0)
 		{
-			if(!strcmp(argv[0] , "ls") || !strcmp(argv[0], "ls\n"))
+			if(argv[0] != NULL) // cuz null seh comparison gives us a seg fault
 			{
-				if(pid == 0)
+				if(!strcmp(argv[0] , "ls") || !strcmp(argv[0], "ls\n"))
 				{
 					ls_function(argv, arg, home_path);				
-					exit(0);
 				}
-				else
-				{
-					(void)waitpid(pid, &status, 0);
-				}			
-			}
-			else if(!strcmp(argv[0] , "pwd") || !strcmp(argv[0], "pwd\n"))
-			{
-				if(pid == 0)
+				else if(!strcmp(argv[0] , "pwd") || !strcmp(argv[0], "pwd\n"))
 				{
 					pwd_function(background_required);
-					exit(0);
 				}
-				else
-				{
-					(void)waitpid(pid, &status,0);
-				}
-			}
 
-			else if(!strcmp(argv[0] , "cd") || !strcmp(argv[0], "cd\n"))
-			{
-				if(pid == 0)
+				else if(!strcmp(argv[0] , "cd") || !strcmp(argv[0], "cd\n"))
 				{
 					cd_function(argv, arg, home_path);			
-					exit(0);
 				}
-				else
-				{
-					(void)waitpid(pid, &status,0);
-				}
-			}
 
-			else if(!strcmp(argv[0] ,"pinfo") || !strcmp(argv[0],"pinfo\n"))
-			{
-				if(pid == 0)
+				else if(!strcmp(argv[0] ,"pinfo") || !strcmp(argv[0],"pinfo\n"))
 				{
 					pinfo_function(argv, arg);				
-					exit(0);
 				}
-				else
-				{
-					(void)waitpid(pid, &status, 0);
-				}			
-			}
-			else if(!strcmp(argv[0] ,"history")||!strcmp(argv[0], "history\n"))
-			{
-				if(pid == 0)
+				else if(!strcmp(argv[0] ,"history")||!strcmp(argv[0], "history\n"))
 				{
 					history_function(argv, home_path , arg);
-					exit(0);
 				}
-				else
-				{
-					(void)waitpid(pid, &status, 0);
-				}
-			}
-			else if(!strcmp(argv[0] , "echo") || !strcmp(argv[0], "echo\n"))
-			{
-				if(pid == 0)
+				else if(!strcmp(argv[0] , "echo") || !strcmp(argv[0], "echo\n"))
 				{
 					echo_function(copy_of_command, background_required);
-					exit(0);
 				}
 				else
 				{
-					(void)waitpid(pid, &status, 0);
-				}
-			}
-			else
-			{
-				if(pid == 0)
-				{
+					// we are in the extra command section now
 					if( execvp(*argv, argv) < 0)
 					{
 						printf("Error : %s  failed!\n", argv[0]);
 					}
-					exit(0);
 				}
-				else
+
+			}
+
+			exit(0);
+		}
+		else
+		{
+			if(background_required == 0)
+				(void)waitpid(pid, &status, 0);
+			if(background_required == 1)
+			{
+				if(WIFEXITED(status))
 				{
-					if(background_required ==  0)
-						(void)waitpid(pid, &status, 0);
-					else if(background_required == 1)
-					{
-						if(WIFEXITED(status))
-						{
-							printf("pid = %d exited, status = %d\n",pid, WEXITSTATUS(status));
-						}
-						else if(WIFCONTINUED(status))
-						{
-							printf("continued\n");
-						}
-						else if (WIFSIGNALED(status))
-						{
-							printf("pid = %d killed by %d\n", pid, WTERMSIG(status));
-						}
-						else if(WIFSTOPPED(status))
-						{
-							printf("pid = %d stopped by %d\n",pid, WTERMSIG(status));
-						}
-					}
+					printf("pid = %d exited, status = %d\n",pid, WEXITSTATUS(status));
+				}
+				else if(WIFCONTINUED(status))
+				{
+					printf("continued\n");
+				}
+				else if (WIFSIGNALED(status))
+				{
+					printf("pid = %d killed by %d\n", pid, WTERMSIG(status));
+				}
+				else if(WIFSTOPPED(status))
+				{
+					printf("pid = %d stopped by %d\n",pid, WTERMSIG(status));
 				}
 			}
-		}
-		if(pid == 0)
-		{
-			exit(0);
 		}
 		// now go to the next command
 		// this step will take us to the next command 
