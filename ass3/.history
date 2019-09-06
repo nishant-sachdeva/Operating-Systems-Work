@@ -1,21 +1,21 @@
-cd ..
-lks
-c
+cat test.c 
+ls > test.c
+vim test.c
+ls >> test.c
+vim test.c
+rm test.c
 clear
-ls 
-cd  ..
-cd ass1
-rmdir rand
-ls
-cd .
-cd ..
 ls
 clear
-cd ass3
-history
-history 4
+ls
+ls > test.c
+ls
+cat test.c
+rm test,c
+rm test.c
 clear
-lks
+s
 c
-clear
+ls
 exit
+quit

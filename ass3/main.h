@@ -8,13 +8,14 @@
 #include <signal.h>
 #include <unistd.h>
 #include <syslog.h>
-#include<sys/wait.h> 
+#include<sys/wait.h>
+#include <fcntl.h>  
 
 #include<dirent.h>
 #include<time.h>
 
 
-
+extern char home_path[1024];
 
 
 
@@ -42,5 +43,7 @@ void history_function(char **argv, char home_path[], int arg);
 void add_to_history(char *  arr, char home_path[]);
 
 void update(char home_path[]);
+
+void file_diversions(int input, int output, int append, char ** argv);
 
 int main();

@@ -1,10 +1,11 @@
 #include "main.h"
 
+
+char * input, *output, *append;
 void do_work(char inp[], char home_path[])
 {
 	// printf("do work mein aa gya\n");
 	add_to_history(inp, home_path);
-
 	char *secondary;
 	char *command = strtok_r(inp, ";", &secondary);
 
@@ -18,7 +19,11 @@ void do_work(char inp[], char home_path[])
 
 		char *parts = strtok_r(command, " ", &secondary_2);
 		int arg = 0, background_required = 0;
-
+		output = malloc(1024*sizeof(char));
+		input = malloc(1024*sizeof(char));
+		append = malloc(1024*sizeof(char));
+		
+		int input_redirection = 0, output_redirection = 0, append_output = 0;
 		char * argv[100];
 		while (parts != NULL)
 		{
@@ -26,7 +31,7 @@ void do_work(char inp[], char home_path[])
 			// now, the entire string is one command, 
 			// identify if it is valid, if yes, do the needful, else, exit with some error message and go on to the next
 
-			if(strcmp(parts, "exit") == 0 || strcmp(parts,"exit\n")== 0)
+			if(strcmp(parts, "quit") == 0 || strcmp(parts,"quit\n")== 0)
 			{
 				exit(0);
 			}
@@ -36,7 +41,40 @@ void do_work(char inp[], char home_path[])
 				background_required = 1;
 			}
 			// mark background as 1 if required
+			// slight issue, so the thing is that, we don't want all these symbols etc. to be counted
 
+			if(strcmp(parts, ">") == 0 || strcmp(parts , ">\n")== 0)
+			{
+				output_redirection = 1;
+				parts = strtok_r(NULL, " ", &secondary_2);
+				if(parts[strlen(parts)-1] =='\n')
+					parts[strlen(parts)-1] = '\0';
+				strcpy(output , parts);
+				parts = strtok_r(NULL, " ", &secondary_2);
+				continue;
+			}
+			if(strcmp(parts, ">>") == 0 || strcmp(parts , ">>\n")== 0)
+			{
+				append_output = 1;
+				parts = strtok_r(NULL, " ", &secondary_2);
+				if(parts[strlen(parts)-1] =='\n')
+					parts[strlen(parts)-1] = '\0';
+				strcpy(append , parts);
+				parts = strtok_r(NULL, " ", &secondary_2);
+				continue;
+			}
+			if(strcmp(parts, "<") == 0 || strcmp(parts,"<\n") == 0)
+			{
+				input_redirection = 1;
+				parts = strtok_r(NULL, " ", &secondary_2);
+				if(parts[strlen(parts)-1] =='\n')
+					parts[strlen(parts)-1] = '\0';
+				strcpy(input, parts);
+				parts = strtok_r(NULL, " ", &secondary_2);
+				continue;
+			}
+
+			// so by the time I reach here , we are past the point where there are parameters for the commands
 			if(strcmp(parts, "\n") !=0 && background_required == 0 )
 			{
 				argv[arg]=(char *)malloc((100)*sizeof(char));
@@ -51,7 +89,48 @@ void do_work(char inp[], char home_path[])
 		argv[arg]=(char *)malloc((100)*sizeof(char));
 		argv[arg]  = NULL;
 
-		// so here is the deal, the data 2d array already has the command input, and now for every commmand we are busy trying to get it into one big 2d array, and honestly, I don't think we are doing a very great job !
+		// for (int i = 0; i < arg; i++)
+		// {
+		// 	printf("%s\n",argv[i]);
+		// }
+
+		char * redirect[5];
+		if(input_redirection == 1)
+		{
+			// printf("input is %s\n", input);
+			redirect[0] = (char*)malloc((100)*sizeof(char));
+			strcpy(redirect[0], input);
+		}
+		else
+		{
+			redirect[0] = (char*)malloc((100)*sizeof(char));
+			redirect[0] = NULL;
+		}
+		if(output_redirection == 1)
+		{
+			// printf("output is %s\n", output);
+			redirect[1] = (char*)malloc((100)*sizeof(char));
+			strcpy(redirect[1], output);
+		}
+		else
+		{
+			redirect[1] = (char*)malloc((100)*sizeof(char));
+			redirect[1] = NULL;
+		}
+
+		if(append_output == 1)
+		{
+			// printf("output is %s\n", append);
+			redirect[2] = (char*)malloc((100)*sizeof(char));
+			strcpy(redirect[2], append);
+		}
+		else
+		{
+			redirect[2] = (char*)malloc((100)*sizeof(char));
+			redirect[2] = NULL;
+		}
+
+		// so I have created a function which is pretty similar in make up to the previous one that was being used		
 		pid_t pid;
 		int status;
 		pid = fork();
@@ -62,7 +141,9 @@ void do_work(char inp[], char home_path[])
 		// yhaan fork  ho gya hai, right, now we will execute all the commands;
 
 		if(pid == 0)
-		{
+		{   
+			file_diversions(input_redirection, output_redirection, append_output, redirect);
+
 			if(argv[0] != NULL) // cuz null seh comparison gives us a seg fault
 			{
 				if(!strcmp(argv[0] , "ls") || !strcmp(argv[0], "ls\n"))
@@ -73,8 +154,6 @@ void do_work(char inp[], char home_path[])
 				{
 					pwd_function(background_required, home_path);
 				}
-
-
 				else if(!strcmp(argv[0] ,"pinfo") || !strcmp(argv[0],"pinfo\n"))
 				{
 					pinfo_function(argv, arg);				
@@ -87,32 +166,30 @@ void do_work(char inp[], char home_path[])
 				{
 					echo_function(copy_of_command, background_required);
 				}
-                else if(!strcmp(argv[0] , "cd") || !strcmp(argv[0], "cd\n"))
-			    {
-				    // cd_function(argv, arg, home_path);			
-                    exit(0);
-                }
+				else if(!strcmp(argv[0] , "cd") || !strcmp(argv[0], "cd\n"))
+				{
+					// cd_function(argv, arg, home_path);			
+					exit(0);
+				}
 				else
 				{
-					// we are in the extra command section now
+					if(background_required == 1)
+						setpgid(0,0);
 					if( execvp(*argv, argv) < 0)
 					{
 						printf("Error : %s  failed!\n", argv[0]);
 					}
 				}
-
 			}
 
 			exit(0);
 		}
 		else
 		{
-            if(!strcmp(argv[0] , "cd") || !strcmp(argv[0], "cd\n"))
+			if(!strcmp(argv[0] , "cd") || !strcmp(argv[0], "cd\n"))
 			{
 				cd_function(argv, arg, home_path);			
-            }
-            // cd command is not supposed to be executed in a forked process, hence this exception
-
+			}
 
 			if(background_required == 0)
 				(void)waitpid(pid, &status, 0);
@@ -138,7 +215,13 @@ void do_work(char inp[], char home_path[])
 		}
 		// now go to the next command
 		// this step will take us to the next command 
+		free(input);
+		free(output);
+		free(append);
 		command = strtok_r(NULL, ";", &secondary);
 	}
 	return ;
 }
+
+
+
