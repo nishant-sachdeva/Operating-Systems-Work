@@ -1,7 +1,7 @@
 #include "main.h"
 
 
-void file_diversions(int input, int output, int append, char ** argv)
+void diversion(int input, int output, int append, char ** argv)
 {
     char * input_path, *output_path, *append_path;
 

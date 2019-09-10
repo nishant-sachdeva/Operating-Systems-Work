@@ -28,6 +28,7 @@ void do_work(char inp[], char home_path[])
 		while (parts != NULL)
 		{
 
+
 			// now, the entire string is one command, 
 			// identify if it is valid, if yes, do the needful, else, exit with some error message and go on to the next
 
@@ -39,6 +40,8 @@ void do_work(char inp[], char home_path[])
 			if(strcmp(parts, "&") == 0 || strcmp(parts, "&\n") == 0)
 			{
 				background_required = 1;
+				parts = strtok_r(NULL, " ", &secondary_2);
+				continue; // so we basically ignore the background thing to provide for further commands after the background symbol
 			}
 			// mark background as 1 if required
 			// slight issue, so the thing is that, we don't want all these symbols etc. to be counted
@@ -75,7 +78,7 @@ void do_work(char inp[], char home_path[])
 			}
 
 			// so by the time I reach here , we are past the point where there are parameters for the commands
-			if(strcmp(parts, "\n") !=0 && background_required == 0 )
+			if(strcmp(parts, "\n") !=0 )
 			{
 				argv[arg]=(char *)malloc((100)*sizeof(char));
 				if(parts[strlen(parts)-1] =='\n')
@@ -84,10 +87,12 @@ void do_work(char inp[], char home_path[])
 				arg++;
 			}
 
+
 			parts = strtok_r(NULL, " ", &secondary_2);
 		}
 		argv[arg]=(char *)malloc((100)*sizeof(char));
 		argv[arg]  = NULL;
+
 
 		// for (int i = 0; i < arg; i++)
 		// {
@@ -130,6 +135,7 @@ void do_work(char inp[], char home_path[])
 			redirect[2] = NULL;
 		}
 
+
 		// so I have created a function which is pretty similar in make up to the previous one that was being used		
 		pid_t pid;
 		int status;
@@ -142,10 +148,11 @@ void do_work(char inp[], char home_path[])
 
 		if(pid == 0)
 		{   
-			file_diversions(input_redirection, output_redirection, append_output, redirect);
 
-			if(argv[0] != NULL) // cuz null seh comparison gives us a seg fault
+			diversion(input_redirection, output_redirection, append_output, redirect);
+			if(arg != 0) // cuz null seh comparison gives us a seg fault
 			{
+
 				if(!strcmp(argv[0] , "ls") || !strcmp(argv[0], "ls\n"))
 				{
 					ls_function(argv, arg, home_path);				
@@ -186,9 +193,11 @@ void do_work(char inp[], char home_path[])
 		}
 		else
 		{
+			if(arg != 0){
 			if(!strcmp(argv[0] , "cd") || !strcmp(argv[0], "cd\n"))
 			{
 				cd_function(argv, arg, home_path);			
+			}
 			}
 
 			if(background_required == 0)

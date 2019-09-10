@@ -7,10 +7,11 @@
 #include <error.h>
 #include <signal.h>
 #include <unistd.h>
+
 #include <syslog.h>
 #include<sys/wait.h>
 #include <fcntl.h>  
-
+#include <stdlib.h>
 #include<dirent.h>
 #include<time.h>
 
@@ -22,7 +23,6 @@ extern char home_path[1024];
 void get_path(char arr[]);
 void displayPrompt(char home_path[]);
 void take_commands(char input[]);
-void do_work(char inp[], char home_path[]);
 void fill_path(char path[], char home_path[]);
 void parse(char *line, char **argv);
 int substring(char arr1[], char arr2[]);
@@ -44,6 +44,9 @@ void add_to_history(char *  arr, char home_path[]);
 
 void update(char home_path[]);
 
-void file_diversions(int input, int output, int append, char ** argv);
+void diversion(int input, int output, int append, char ** argv);
+
+void do_work(char inp[], char home_path[]);
+
 
 int main();
