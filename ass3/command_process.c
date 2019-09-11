@@ -172,10 +172,14 @@ void do_work(char inp[], char home_path[])
 				else if(!strcmp(argv[0] , "echo") || !strcmp(argv[0], "echo\n"))
 				{
 					echo_function(copy_of_command);
+				}				
+				else if(!strcmp(argv[0] , "kjob") || !strcmp(argv[0], "kjob\n"))
+				{
+					kjobs(argv, arg);
 				}
 				else if(!strcmp(argv[0] , "jobs") || !strcmp(argv[0], "jobs\n"))
 				{
-					jobs_function(argv, arg);
+					jobs_list(argv, arg);
 				}
 				else if(!strcmp(argv[0] , "cd") || !strcmp(argv[0], "cd\n"))
 				{

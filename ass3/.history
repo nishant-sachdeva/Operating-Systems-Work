@@ -1,21 +1,21 @@
-printenv nishu
-quit
-setenv nishu hiiiiiiiiii
-printenv nishu
-unsetenv nishu
-printenv
-c
-clear
-printenv nishu
-quit
-echo hello world
-echo "hello wrold[1;2A"
-echo "hello wrold"
-clera
-clear
-quit
-echo hello world
 echo "hello world"
 clear
 c
+quit
+pinfo
+clear
+quit
+ps
+firefox &
+kjob 17424 9
+ps
+clear
+s
+ls
+clear
+quit
+ps
+kjob 343234234 9
+clear
+ls
 quit

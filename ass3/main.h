@@ -21,7 +21,9 @@ extern char home_path[1024];
 
 void do_work(char inp[], char home_path[]);
 
-void jobs_function(char **argv, int arg);
+void kjobs(char ** argv, int arg);
+
+void jobs_list(char **argv, int arg);
 
 void set_env(char **argv, int arg);
 
