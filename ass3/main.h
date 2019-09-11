@@ -19,18 +19,29 @@
 extern char home_path[1024];
 
 
+void do_work(char inp[], char home_path[]);
+
+void jobs_function(char **argv, int arg);
+
+void set_env(char **argv, int arg);
+
+void unset_env(char ** argv, int arg);
 
 void get_path(char arr[]);
-void displayPrompt(char home_path[]);
-void take_commands(char input[]);
-void fill_path(char path[], char home_path[]);
-void parse(char *line, char **argv);
-int substring(char arr1[], char arr2[]);
 
+void displayPrompt(char home_path[]);
+
+void take_commands(char input[]);
+
+void fill_path(char path[], char home_path[]);
+
+void parse(char *line, char **argv);
+
+int substring(char arr1[], char arr2[]);
 
 void pwd_function(int background,  char home_path[]);
 
-void echo_function(char *command, int background);
+void echo_function(char *command);
 
 void cd_function(char **argv, int arg, char arr[]);
 
@@ -46,7 +57,6 @@ void update(char home_path[]);
 
 void diversion(int input, int output, int append, char ** argv);
 
-void do_work(char inp[], char home_path[]);
 
 
 int main();

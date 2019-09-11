@@ -171,11 +171,25 @@ void do_work(char inp[], char home_path[])
 				}
 				else if(!strcmp(argv[0] , "echo") || !strcmp(argv[0], "echo\n"))
 				{
-					echo_function(copy_of_command, background_required);
+					echo_function(copy_of_command);
+				}
+				else if(!strcmp(argv[0] , "jobs") || !strcmp(argv[0], "jobs\n"))
+				{
+					jobs_function(argv, arg);
 				}
 				else if(!strcmp(argv[0] , "cd") || !strcmp(argv[0], "cd\n"))
 				{
-					// cd_function(argv, arg, home_path);			
+					// we need to work cd on the child process
+					exit(0);
+				}
+				else if(!strcmp(argv[0] , "setenv") || !strcmp(argv[0], "setenv\n"))
+				{
+					// we need to work setenv on the child process
+					exit(0);
+				}
+				else if(!strcmp(argv[0] , "unsetenv") || !strcmp(argv[0], "unsetenv\n"))
+				{
+					// we need to work unsetenv on the child process
 					exit(0);
 				}
 				else
@@ -193,11 +207,21 @@ void do_work(char inp[], char home_path[])
 		}
 		else
 		{
-			if(arg != 0){
-			if(!strcmp(argv[0] , "cd") || !strcmp(argv[0], "cd\n"))
+			if(arg != 0)
 			{
-				cd_function(argv, arg, home_path);			
-			}
+				if(!strcmp(argv[0] , "cd") || !strcmp(argv[0], "cd\n"))
+				{
+					cd_function(argv, arg, home_path);			
+				}
+				else if(!strcmp(argv[0] , "setenv") || !strcmp(argv[0], "setenv\n"))
+				{
+					set_env(argv, arg);
+				}
+				else if(!strcmp(argv[0] , "unsetenv") || !strcmp(argv[0], "unsetenv\n"))
+				{
+					// we need to work setenv on the child process
+					unset_env(argv, arg);
+				}
 			}
 
 			if(background_required == 0)

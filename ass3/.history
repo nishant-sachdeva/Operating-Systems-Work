@@ -1,21 +1,21 @@
-clear
-ls
-cd folder
-cd -
-cd ..
-ls
-cd -
-c
-ls
-clear
-ls
-rmdir folder
-clear
-quot
+printenv nishu
 quit
-sl
+setenv nishu hiiiiiiiiii
+printenv nishu
+unsetenv nishu
+printenv
 c
 clear
-quot
-quit'
+printenv nishu
+quit
+echo hello world
+echo "hello wrold[1;2A"
+echo "hello wrold"
+clera
+clear
+quit
+echo hello world
+echo "hello world"
+clear
+c
 quit
