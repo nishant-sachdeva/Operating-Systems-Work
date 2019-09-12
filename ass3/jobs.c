@@ -3,7 +3,10 @@
 
 void jobs_list(char ** argv , int arg)
 {
-    // now we are here, we now have to list all the jobs and their pids and states, and all that in order of their times, recent ones at the bottom and the oldests ones at the top
+    // now we are here, we now have to list all the jobs and their pids and states, and all that in order of their times, recent ones at the bottom and the oldests ones at the top so
+    // the list goes like <number> <job type foreground:background> <job name > < pid>
+
+
     return ;
 }
 
@@ -25,4 +28,16 @@ void kjobs(char ** argv, int arg)
     
     return ;
 
+}
+
+void fg(char ** argv, int arg)
+{
+
+    return ;
+}
+
+void bg(char ** argv, int arg)
+{
+
+    return;
 }

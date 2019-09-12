@@ -21,6 +21,12 @@ extern char home_path[1024];
 
 void do_work(char inp[], char home_path[]);
 
+void fg(char ** argv, int arg);
+
+void bg(char ** argv, int arg);
+
+void handle_piped_command(char * piped_command);
+
 void kjobs(char ** argv, int arg);
 
 void jobs_list(char **argv, int arg);

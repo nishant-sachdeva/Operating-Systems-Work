@@ -1,21 +1,21 @@
-ps
-firefox &
-kjob 17424 9
-ps
-clear
-s
-ls
-clear
-quit
-ps
-kjob 343234234 9
 clear
 ls
-quit
 ls
 clear
-ps
-jobs
+ls 
+ls | wc -l
+ls
+ls ; wc -l echo.c
 clear
+ls
 c
+e
 quit
+ls
+c
+ls
+clear
+ls | wc -l
+ls | wc -l
+ls 
+ls | wc -l
