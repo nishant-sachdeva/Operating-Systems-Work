@@ -1,7 +1,3 @@
-cat
-cat
-htop
-clear
 vim &
 ps
 kill -9 *
@@ -20,4 +16,8 @@ clera
 clear
 ls
 clear
+quit
+ls -a | wc -l
+clear
+ls
 quit
