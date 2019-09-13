@@ -1,21 +1,23 @@
+cat
+cat
+htop
+clear
+vim &
+ps
+kill -9 *
+ps | cut -d " " -f2
+ps | cut -d  -f2
+ps | cut -d ' ' -f2
+clear
+ls -a | wc -c | wc
 clear
 ls
-ls
-clear
-ls 
-ls | wc -l
-ls
-ls ; wc -l echo.c
-clear
-ls
-c
-e
 quit
-ls
-c
+cat echo.c | grep main > test.txt | wc -l
+cat test.txt
+rm test.txt
+clera
+clear
 ls
 clear
-ls | wc -l
-ls | wc -l
-ls 
-ls | wc -l
+quit

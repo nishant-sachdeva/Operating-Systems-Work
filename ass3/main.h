@@ -21,11 +21,15 @@ extern char home_path[1024];
 
 void do_work(char inp[], char home_path[]);
 
+void signal_handler(int signal_number);
+
+void deal_with_background();
+
 void fg(char ** argv, int arg);
 
 void bg(char ** argv, int arg);
 
-void handle_piped_command(char * piped_command);
+void handle_piped_command(char * piped_command, int command_number, int is_last_command, int input_pipe);
 
 void kjobs(char ** argv, int arg);
 

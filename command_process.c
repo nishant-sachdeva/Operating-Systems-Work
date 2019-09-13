@@ -1,5 +1,21 @@
 #include "main.h"
 
+int quit_mila_hai = 0;
+
+char * argv[100];
+int arg = 0;
+
+
+/*
+void do_work(char inp[], char home_path[])
+{
+
+
+}
+
+
+*/
+
 
 void do_work(char inp[], char home_path[])
 {
@@ -24,24 +40,55 @@ void do_work(char inp[], char home_path[])
 
 		while(piped_command != NULL)
 		{
+			//so the deal is there is a lot of confusion that's happenning with the backgroud processes
+
 			pipe(fd[command_number]);
-			if(command_number == 0)
+			pid_t pid_for_pipe = fork();
+			if(pid_for_pipe == 0)
 			{
-				if(strcmp(secondary_pipe, "\0") != 0)
+
+				if(command_number == 0)
 				{
-					dup2(fd[command_number][1], STDOUT_FILENO);
+					if(strcmp(secondary_pipe, "\0") != 0)
+					{
+						dup2(fd[command_number][1], STDOUT_FILENO);
+						close(fd[command_number][0]);
+						close(fd[command_number][1]);
+					}
 				}
-			}
-			else if(strcmp(secondary_pipe, "\0") == 0)
-			{
-				dup2(fd[command_number-1][0], STDIN_FILENO);
+				else if(strcmp(secondary_pipe, "\0") == 0)
+				{
+					dup2(fd[command_number-1][0], STDIN_FILENO);
+					close(fd[command_number-1][0]);
+					close(fd[command_number-1][1]);
+				}
+				else
+				{
+					dup2(fd[command_number][1],STDOUT_FILENO);
+
+					close(fd[command_number][0]);
+					close(fd[command_number][1]);
+					
+					dup2(fd[command_number-1][0],STDIN_FILENO);
+
+					close(fd[command_number-1][0]);
+					close(fd[command_number-1][1]);
+				}
+
+
+				handle_piped_command(piped_command, command_number);
+				exit(0); 
+				// this ends the current process
 			}
 			else
 			{
-				dup2(fd[command_number][1],STDOUT_FILENO);
-				dup2(fd[command_number-1][0],STDIN_FILENO);
+				if(command_number != 0)
+				{
+					close(fd[command_number-1][0]);
+					close(fd[command_number-1][1]);
+				}
+				wait(NULL);
 			}
-			handle_piped_command(piped_command);
 			piped_command = strtok_r(NULL, "|", &secondary_pipe);
 			command_number++;
 		}
@@ -51,8 +98,9 @@ void do_work(char inp[], char home_path[])
 }
 
 
-void handle_piped_command(char * piped_command)
+void handle_piped_command(char * piped_command, int command_number)
 {
+
 	char *secondary_2, *copy_of_command;
 
 	copy_of_command = (char *)malloc((1000)*sizeof(char));
@@ -62,13 +110,13 @@ void handle_piped_command(char * piped_command)
 	char *parts = strtok_r(piped_command, " ", &secondary_2);
 	char * input, *output, *append;
 
-	int arg = 0, background_required = 0;
+	arg = 0;
+	int background_required = 0;
 	output = malloc(1024*sizeof(char));
 	input = malloc(1024*sizeof(char));
 	append = malloc(1024*sizeof(char));
 
 	int input_redirection = 0, output_redirection = 0, append_output = 0;
-	char * argv[100];
 	while (parts != NULL)
 	{
 		// now, the entire string is one command, 
@@ -78,6 +126,8 @@ void handle_piped_command(char * piped_command)
 
 		if(strcmp(parts, "quit") == 0 || strcmp(parts,"quit\n")== 0)
 		{
+			printf("Say hi in child 1\n");
+			quit_mila_hai = 1;
 			exit(0);
 		}
 
@@ -174,6 +224,9 @@ void handle_piped_command(char * piped_command)
 		redirect[2] = NULL;
 	}
 
+	// so command yhaan ready hai, abi I have to check
+	// if piping is required, then implement yhin seh karteh hain
+	// otherwise we can just leave it at that
 
 	// so I have created a function which is pretty similar in make up to the previous one that was being used		
 	pid_t pid;
@@ -188,10 +241,14 @@ void handle_piped_command(char * piped_command)
 	if(pid == 0)
 	{
 
+
 		diversion(input_redirection, output_redirection, append_output, redirect);
+		// for(int i = 0 ; i <arg ; i++)
+		// 	printf("%s\n", argv[i]);
 
 		if(arg != 0) // cuz null seh comparison gives us a seg fault
 		{
+			// printf("hi\n");
 
 			if(!strcmp(argv[0] , "ls") || !strcmp(argv[0], "ls\n"))
 			{
@@ -251,23 +308,7 @@ void handle_piped_command(char * piped_command)
 	}
 	else
 	{
-		if(arg != 0)
-		{
-			if(!strcmp(argv[0] , "cd") || !strcmp(argv[0], "cd\n"))
-			{
-				cd_function(argv, arg, home_path);			
-			}
-			else if(!strcmp(argv[0] , "setenv") || !strcmp(argv[0], "setenv\n"))
-			{
-				set_env(argv, arg);
-			}
-			else if(!strcmp(argv[0] , "unsetenv") || !strcmp(argv[0], "unsetenv\n"))
-			{
-				// we need to work setenv on the child process
-				unset_env(argv, arg);
-			}
-		}
-
+		
 		if(background_required == 0)
 			(void)waitpid(pid, &status, 0);
 		if(background_required == 1)
