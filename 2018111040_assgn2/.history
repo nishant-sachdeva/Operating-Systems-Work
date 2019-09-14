@@ -1,0 +1,20 @@
+clear
+ls
+vim &
+ps
+clear
+ps
+kill -9 5759
+clear
+ls
+pinfo
+pinfo
+clear
+pinfo
+vim &
+ps
+sleep 10 &
+
+ps
+
+

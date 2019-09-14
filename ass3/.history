@@ -1,10 +1,3 @@
-vim &
-ps
-kill -9 *
-ps | cut -d " " -f2
-ps | cut -d  -f2
-ps | cut -d ' ' -f2
-clear
 ls -a | wc -c | wc
 clear
 ls
@@ -20,4 +13,11 @@ quit
 ls -a | wc -l
 clear
 ls
+quit
+pinfo
+clear
+ls
+ls -l
+ls -al
+clear
 quit
