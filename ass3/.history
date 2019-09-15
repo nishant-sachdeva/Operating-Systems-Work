@@ -1,23 +1,23 @@
-ls
-ls -l
-ls -al
-clear
-quit
-clear
-ls
-cd -
-cd ..
-cd -
-ls
-mkdir folder
-cd folder
-cd -
-clear
-ls
-quit
-ps
+sleep 10 &
+jobs
 quit
 ps
 clear
-ls
+jobs
+vim &
+vim test.c &
+htop &
+jobs
+gedit &
+jobs
+
+jobs
+quit
+htop &
+vim &
+jobs
+overkill
+
+jobs
+clear
 quit

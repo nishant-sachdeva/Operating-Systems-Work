@@ -237,6 +237,10 @@ void do_work(char inp[], char home_path[])
 					{
 						jobs_list(argv, arg);
 					}
+					else if(!strcmp(argv[0] , "overkill") || !strcmp(argv[0], "overkill\n"))
+					{
+						overkill_func(argv, arg);
+					}
 					else
 					{
 						if(background_required == 1)
@@ -253,9 +257,14 @@ void do_work(char inp[], char home_path[])
 			else
 			{
 				if(background_required == 0)
+				{
+					// means no background wanted
+					add_to_foreground((int)pid);
 					(void)waitpid(pid, &status, 0);
+				}
 				if(background_required == 1)
 				{
+					add_to_background((int)pid);
 					deal_with_background();
 				}
 				if(strcmp(secondary_pipe, "\0") != 0)

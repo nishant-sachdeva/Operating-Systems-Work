@@ -1,12 +1,104 @@
 #include "main.h"
+#define decimal 10
 
+int foreground_process_id = 0;
+
+int background_processes_array[2048];
+
+int background_counter = 0;
+
+
+void add_to_foreground(int process_id)
+{
+    foreground_process_id = process_id;
+    return;
+}
+
+
+void add_to_background(int process_id)
+{
+    background_processes_array[background_counter++] = process_id;
+    return ;
+}
+
+void print_info(int process_id, int job_number)
+{
+    char* name = (char*)calloc(1024,sizeof(char));
+    if(name)
+    {
+        sprintf(name, "/proc/%d/comm",process_id);
+        FILE* f = fopen(name,"r");
+        if(f)
+        {
+            size_t size;
+            size = fread(name, sizeof(char), 1024, f);
+            if(size>0)
+            {
+                if('\n'==name[size-1])
+                    name[size-1]='\0';
+            }
+            fclose(f);
+        }
+    }
+
+    char *arr =  malloc(1024*sizeof(char));    
+    char *id =  malloc(1024*sizeof(char));    
+    char *status =  malloc(1024*sizeof(char));    
+    size_t size = 1024;
+
+    char* stat_file = (char*)calloc(1024,sizeof(char));
+    sprintf(stat_file, "/proc/%d/status", process_id);
+    if(stat_file)
+    {
+        FILE * data = fopen(stat_file, "r");
+        if(data)
+        {
+            int field = 0;
+            while(field < 4)
+            { 
+                if(getline(&arr, &size, data) == -1)
+                {
+                    perror("Oops! Error occurred! Please check\n");
+                    break;
+                }
+                if(field == 0)
+                {
+                    strcpy(id, arr);
+                }
+                else if(field == 2)
+                {
+                    strcpy(status, arr);
+                    // okay, i will try to fix this \n thingy
+                    char * secondary;
+                    char *parts = strtok_r(status, "\n", &secondary);
+                    strcpy(status, parts);
+                    char * secondary2;
+                    parts = strtok_r(status," ", &secondary2);
+                    parts = strtok_r(NULL, " ", &secondary2);
+                    strcpy(status, parts);
+                }
+                field++;
+            }
+        }
+        fclose(data);        
+    }
+    char proc_id[100];
+    sprintf(proc_id, "%d", process_id);
+    printf("[%d] : %s %s [%s]\n",job_number, status , name, proc_id);
+
+    return;
+
+}
 
 void jobs_list(char ** argv , int arg)
 {
-    // now we are here, we now have to list all the jobs and their pids and states, and all that in order of their times, recent ones at the bottom and the oldests ones at the top so
-    // the list goes like <number> <job type foreground:background> <job name > < pid>
-
-
+    // okay so the idea is that I have the list of all jobs , and the idea is that the latest one are at the current counter
+    // so I'll take the list of all jobs and print out their info side by side
+    // then in the end, I'll take the foreground one and put out it's data too
+    for(int i = 0 ; i < (background_counter); i++)
+    {
+        print_info(background_processes_array[i], i+1); // this is the oldest -> newest order
+    }
     return ;
 }
 
@@ -27,9 +119,19 @@ void kjobs(char ** argv, int arg)
     }
     
     return ;
-
 }
 
+void overkill_func()
+{
+    for (int i = 0; i < background_counter; i++)
+    {
+        if(kill(background_processes_array[i], 9) == -1)
+        {
+            printf("Couldn't kill %d\n", background_processes_array[background_counter]);
+        }
+    }
+    return;
+}
 void fg(char ** argv, int arg)
 {
 

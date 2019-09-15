@@ -27,7 +27,7 @@ void pinfo_function(char ** argv, int args)
 
     strcpy(path_exe, path_status);
 
-    strcat(path_exe, "/exe");
+    strcat(path_exe, "/cwd");
     strcat(path_status, "/status");
 
     //  abi we have 2 file paths, jhaan seh data read karna hai

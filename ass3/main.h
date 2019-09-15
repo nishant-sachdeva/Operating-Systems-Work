@@ -25,6 +25,14 @@ void signal_handler(int signal_number);
 
 void deal_with_background();
 
+void overkill_func();
+
+void add_to_foreground(int process_id); 
+
+void add_to_background(int process_id); 
+
+void print_info(int process_id, int job_number);
+
 void fg(char ** argv, int arg);
 
 void bg(char ** argv, int arg);
