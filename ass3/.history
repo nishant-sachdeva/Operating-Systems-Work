@@ -1,23 +1,23 @@
-ls -a | wc -c | wc
-clear
-ls
-quit
-cat echo.c | grep main > test.txt | wc -l
-cat test.txt
-rm test.txt
-clera
-clear
-ls
-clear
-quit
-ls -a | wc -l
-clear
-ls
-quit
-pinfo
-clear
 ls
 ls -l
 ls -al
 clear
+quit
+clear
+ls
+cd -
+cd ..
+cd -
+ls
+mkdir folder
+cd folder
+cd -
+clear
+ls
+quit
+ps
+quit
+ps
+clear
+ls
 quit
