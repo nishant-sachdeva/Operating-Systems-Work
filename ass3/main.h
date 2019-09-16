@@ -25,6 +25,10 @@ void signal_handler(int signal_number);
 
 void ctrlZhandler(int signal);
 
+void ctrlChandler(int signal);
+
+void send_to_Chandler(int signal);
+
 void send_to_Zhandler(int signal);
 
 

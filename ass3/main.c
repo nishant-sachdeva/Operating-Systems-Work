@@ -9,17 +9,22 @@ char home_path[1024];
 char prev_directory[1024];
 
 
-void ctrlZhandler(int signal)
+void ctrlZhandler(int signal1)
 {
-
-	send_to_Zhandler(signal);
-	return;
+	signal(SIGTSTP, ctrlZhandler);
+	signal(SIGTTOU, SIG_IGN);
 }
 
+void ctrlChandler(int signal)
+{
+	send_to_Chandler(signal);
+	return;
+}
 
 int main()
 {
 	signal(SIGTSTP, ctrlZhandler);
+	signal(SIGINT, ctrlChandler);
 	get_path(home_path);
 	strcpy(prev_directory, home_path);
 	int saved_stdin = dup(STDIN_FILENO);
@@ -28,6 +33,8 @@ int main()
 	{
 		saved_stdin = dup(STDIN_FILENO);
 		saved_stdout = dup(STDIN_FILENO);
+		add_to_foreground(0);
+		// this will tell me if and when there is no foreground process running
 		displayPrompt(home_path);
 		char inp[1024];
 		take_commands(inp);

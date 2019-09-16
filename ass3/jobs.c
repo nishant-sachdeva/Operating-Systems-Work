@@ -14,9 +14,29 @@ void add_to_foreground(int process_id)
     return;
 }
 
-void send_to_Zhandler(int signal)
+void send_to_Chandler(int signal)
 {
-    if(kill(foreground_process_id, SIGTSTP) == -1);
+    if(foreground_process_id != 0)
+    {
+        if(kill(foreground_process_id, SIGINT) == -1);
+    }
+    return;
+}
+
+void send_to_Zhandler(int signal_number)
+{
+    if(foreground_process_id != 0)
+    {
+        signal(SIGTTOU, SIG_IGN);
+        printf("sending the stop signal\n");
+        tcsetpgrp(0, getpid());
+        kill(foreground_process_id, SIGTSTP);
+		// setpgid(0,0);
+
+       signal(SIGTSTP, SIG_IGN);
+       background_processes_array[background_counter++] = foreground_process_id;
+
+    }
     return;
 }
 
@@ -147,9 +167,9 @@ void fg_function(char ** argv, int arg)
         printf("Error: job dosen't exist\n");
         return;
     }
-    int signal = 0;
+    // int signal = 0;
     int job = background_processes_array[job_number];
-    if(kill(job, signal) == -1)
+    if(kill(job, 0) == -1)
     {
         printf("Error: couldn't access job with pid %d\n", job);
         return;
@@ -157,12 +177,14 @@ void fg_function(char ** argv, int arg)
     else
     {
         printf("about to send signal \n");
+        foreground_process_id = job;
+        tcsetpgrp(0,job);
         kill(job, SIGCONT);
-        tcsetpgrp(0, job);
-        // signal(SIGTTOU, SIG_IGN);
+        signal(SIGTTOU, SIG_IGN);
+        int stat;
+        waitpid(job, &stat , WUNTRACED);
         tcsetpgrp(0, getpid());
-        // signal(SIGTTOU, SIG_DFL);
-        // so now we know that this job exists
+        // tcsetpgrp(0, getpid());
     }
     
 
@@ -171,6 +193,22 @@ void fg_function(char ** argv, int arg)
 
 void bg_function(char ** argv, int arg)
 {
-
+    int job_number = atoi(argv[1]) -1;
+    if(job_number > background_counter)
+    {
+        printf("Error: job dosen't exist\n");
+        return;
+    }
+    int job = background_processes_array[job_number];
+    if(kill(job, 0) == -1)
+    {
+        printf("Error: couldn't access job with pid %d\n", job);
+        return;
+    }
+    else
+    {
+        // printf("say hi");
+        kill(job, SIGCONT);
+    }
     return;
 }

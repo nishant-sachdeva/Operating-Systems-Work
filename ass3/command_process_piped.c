@@ -1,5 +1,11 @@
 #include "main.h"
 
+void sigZ(int signum1)
+{
+	add_to_background((int)getpid());
+	kill(getpid(),SIGTSTP);
+	return;
+}
 
 void do_work(char inp[], char home_path[])
 {
@@ -50,6 +56,7 @@ void do_work(char inp[], char home_path[])
 			
 			while (parts != NULL)
 			{
+				add_to_foreground(0);
 
 				if(strcmp(parts, "quit") == 0 || strcmp(parts,"quit\n")== 0)
 				{
@@ -158,6 +165,14 @@ void do_work(char inp[], char home_path[])
 				piped_command = strtok_r(NULL, "|", &secondary_pipe);
 				continue;
 			}
+			else if(!strcmp(argv[0] , "fg") || !strcmp(argv[0], "fg\n"))
+			{
+				fg_function(argv, arg);
+			}
+			else if(!strcmp(argv[0] , "bg") || !strcmp(argv[0], "bg\n"))
+			{
+				bg_function(argv, arg);
+			}
 			else if(!strcmp(argv[0] , "setenv") || !strcmp(argv[0], "setenv\n"))
 			{
 				set_env(argv, arg);
@@ -237,20 +252,21 @@ void do_work(char inp[], char home_path[])
 					{
 						jobs_list(argv, arg);
 					}
-					else if(!strcmp(argv[0] , "fg") || !strcmp(argv[0], "fg\n"))
-					{
-						fg_function(argv, arg);
-					}
-					else if(!strcmp(argv[0] , "bg") || !strcmp(argv[0], "bg\n"))
-					{
-						bg_function(argv, arg);
-					}
 					else if(!strcmp(argv[0] , "overkill") || !strcmp(argv[0], "overkill\n"))
 					{
 						overkill_func(argv, arg);
 					}
+					else if(!strcmp(argv[0] , "fg") || !strcmp(argv[0], "fg\n"))
+					{
+						exit(0);
+					}	
+					else if(!strcmp(argv[0] , "bg") || !strcmp(argv[0], "bg\n"))
+					{
+						exit(0);
+					}
 					else
 					{
+						signal(SIGTSTP, sigZ);
 						if(background_required == 1)
 							setpgid(0,0);
 						if( execvp(*argv, argv) < 0)
@@ -268,7 +284,10 @@ void do_work(char inp[], char home_path[])
 				{
 					// means no background wanted
 					add_to_foreground((int)pid);
-					(void)waitpid(pid, &status, 0);
+					// (void)waitpid(pid, &status, 0);
+					waitpid(pid, &status, WUNTRACED);
+					setpgid(0,0);
+
 				}
 				if(background_required == 1)
 				{
