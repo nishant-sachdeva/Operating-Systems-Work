@@ -1,4 +1,9 @@
 #include "main.h"
+#define COLOR_YELLOW "\033[1;33m"
+#define COLOR_CYAN "\033[0;36m"
+#define COLOR_GREEN "\033[0;32;32m"
+#define COLOR_GRAY "\033[1;30m"
+#define COLOR_NONE "\033[m"
 
 void displayPrompt(char home_path[])
 {
@@ -13,7 +18,7 @@ void displayPrompt(char home_path[])
 	getlogin_r(username, sizeof(username));
 	gethostname(sysname, sizeof(sysname)); 
 
-	printf("<%s @ %s: %s > ", username, sysname,path);
+	printf(COLOR_YELLOW"<%s " COLOR_GREEN"@ %s: " COLOR_CYAN"%s > " COLOR_NONE, username, sysname,path);
 
 	return;
 }

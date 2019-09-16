@@ -237,6 +237,14 @@ void do_work(char inp[], char home_path[])
 					{
 						jobs_list(argv, arg);
 					}
+					else if(!strcmp(argv[0] , "fg") || !strcmp(argv[0], "fg\n"))
+					{
+						fg_function(argv, arg);
+					}
+					else if(!strcmp(argv[0] , "bg") || !strcmp(argv[0], "bg\n"))
+					{
+						bg_function(argv, arg);
+					}
 					else if(!strcmp(argv[0] , "overkill") || !strcmp(argv[0], "overkill\n"))
 					{
 						overkill_func(argv, arg);

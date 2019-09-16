@@ -1,13 +1,25 @@
 #include "main.h"
 
+
+
 char homepath[1024];
 
 
 char home_path[1024];
 char prev_directory[1024];
 
+
+void ctrlZhandler(int signal)
+{
+
+	send_to_Zhandler(signal);
+	return;
+}
+
+
 int main()
 {
+	signal(SIGTSTP, ctrlZhandler);
 	get_path(home_path);
 	strcpy(prev_directory, home_path);
 	int saved_stdin = dup(STDIN_FILENO);
@@ -30,3 +42,4 @@ int main()
 	}
 	return 0;
 }
+

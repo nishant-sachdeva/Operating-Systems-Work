@@ -1,23 +1,23 @@
-sleep 10 &
+ls
+cd ass3
+clear
+ls
+jpbs
 jobs
-quit
-ps
+clear
+htop &
+lls
 clear
 jobs
-vim &
-vim test.c &
-htop &
+clear
 jobs
-gedit &
-jobs
-
-jobs
-quit
-htop &
-vim &
-jobs
-overkill
-
+kjob 30114 9
 jobs
 clear
 quit
+cat
+htop &
+jobs
+kjob 31474 9
+clera
+cat

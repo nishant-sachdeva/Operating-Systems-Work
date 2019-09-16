@@ -23,6 +23,11 @@ void do_work(char inp[], char home_path[]);
 
 void signal_handler(int signal_number);
 
+void ctrlZhandler(int signal);
+
+void send_to_Zhandler(int signal);
+
+
 void deal_with_background();
 
 void overkill_func();
@@ -33,9 +38,9 @@ void add_to_background(int process_id);
 
 void print_info(int process_id, int job_number);
 
-void fg(char ** argv, int arg);
+void fg_function(char ** argv, int arg);
 
-void bg(char ** argv, int arg);
+void bg_function(char ** argv, int arg);
 
 void handle_piped_command(char * piped_command, int command_number, int is_last_command, int input_pipe);
 

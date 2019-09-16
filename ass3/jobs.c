@@ -14,6 +14,11 @@ void add_to_foreground(int process_id)
     return;
 }
 
+void send_to_Zhandler(int signal)
+{
+    if(kill(foreground_process_id, SIGTSTP) == -1);
+    return;
+}
 
 void add_to_background(int process_id)
 {
@@ -132,13 +137,39 @@ void overkill_func()
     }
     return;
 }
-void fg(char ** argv, int arg)
+void fg_function(char ** argv, int arg)
 {
+    printf("in the fg functio now\n");
+    // argv[1] is the pid
+    int job_number = atoi(argv[1]) -1;
+    if(job_number > background_counter)
+    {
+        printf("Error: job dosen't exist\n");
+        return;
+    }
+    int signal = 0;
+    int job = background_processes_array[job_number];
+    if(kill(job, signal) == -1)
+    {
+        printf("Error: couldn't access job with pid %d\n", job);
+        return;
+    }
+    else
+    {
+        printf("about to send signal \n");
+        kill(job, SIGCONT);
+        tcsetpgrp(0, job);
+        // signal(SIGTTOU, SIG_IGN);
+        tcsetpgrp(0, getpid());
+        // signal(SIGTTOU, SIG_DFL);
+        // so now we know that this job exists
+    }
+    
 
     return ;
 }
 
-void bg(char ** argv, int arg)
+void bg_function(char ** argv, int arg)
 {
 
     return;
