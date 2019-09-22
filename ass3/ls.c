@@ -132,7 +132,7 @@ void ls_function(char ** argv, int args, char home_path[])
             }
             else
             {
-                printf("%s  ", name);
+                printf("%s   ", name);
             }
         }
         printf("\n");

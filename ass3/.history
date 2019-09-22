@@ -1,22 +1,22 @@
-kjob 244240 19
-ps
-ps
-ps
-kjob 244240 19
-ps
-ps
-kjob 244240 19
-kjob 24015 19
-ps
-jobs
-clear
-
-quit
-clear
-ls
-ls -a
 clear
 cd ..
 cd -
+clear
+quit
+ls
+clear
+ls
+
+clear
+ls
+quit
+ls
+vim ls.c
+clear
+quit
+ls
+vim lss.c
+quit
+ls
 clear
 quit
