@@ -8,11 +8,15 @@ char homepath[1024];
 char home_path[1024];
 char prev_directory[1024];
 
+int foreground_process_id;
+
 
 void ctrlZhandler(int signal1)
 {
 	signal(SIGTSTP, ctrlZhandler);
 	signal(SIGTTOU, SIG_IGN);
+	add_to_background(foreground_process_id);
+	// kill(getpid(),SIGTSTP);
 }
 
 void ctrlChandler(int signal)

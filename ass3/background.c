@@ -14,7 +14,6 @@ void signal_handler(int signal_number)
 	if(pid > 0)
 	{
 		printf("pid = %d exited, status = %d\n",pid, status);
-	}
-	
+	}	
 	return;
 }

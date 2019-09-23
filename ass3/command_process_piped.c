@@ -1,11 +1,5 @@
 #include "main.h"
 
-void sigZ(int signum1)
-{
-	add_to_background((int)getpid());
-	kill(getpid(),SIGTSTP);
-	return;
-}
 
 void do_work(char inp[], char home_path[])
 {
@@ -168,10 +162,14 @@ void do_work(char inp[], char home_path[])
 			else if(!strcmp(argv[0] , "fg") || !strcmp(argv[0], "fg\n"))
 			{
 				fg_function(argv, arg);
+				piped_command = strtok_r(NULL, "|", &secondary_pipe);
+				continue;
 			}
 			else if(!strcmp(argv[0] , "bg") || !strcmp(argv[0], "bg\n"))
 			{
 				bg_function(argv, arg);
+				piped_command = strtok_r(NULL, "|", &secondary_pipe);
+				continue;
 			}
 			else if(!strcmp(argv[0] , "setenv") || !strcmp(argv[0], "setenv\n"))
 			{
@@ -266,7 +264,6 @@ void do_work(char inp[], char home_path[])
 					}
 					else
 					{
-						signal(SIGTSTP, sigZ);
 						if(background_required == 1)
 							setpgid(0,0);
 						if( execvp(*argv, argv) < 0)

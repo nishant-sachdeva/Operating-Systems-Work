@@ -1,7 +1,7 @@
 
 CC=gcc
 
-FILES = *.c main.h
+FILES = *.c
 
 install:
 	$(CC) $(FILES) -o a.out

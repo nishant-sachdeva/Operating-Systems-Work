@@ -1,22 +1,22 @@
-clear
-cd ..
-cd -
-clear
-quit
+jobs
+vim &
+htop &
+vim &
+fg 1
+jobs
+top  &
+nano &
 ls
+htop &
+vim  &
+jobs
+fg 1
+vim &
+clera
 clear
-ls
-
-clear
-ls
-quit
-ls
-vim ls.c
-clear
-quit
-ls
-vim lss.c
-quit
-ls
-clear
-quit
+htop &
+vim &
+htop &
+jobs
+fg 2
+vim &

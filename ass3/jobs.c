@@ -1,7 +1,7 @@
 #include "main.h"
 #define decimal 10
 
-int foreground_process_id = 0;
+extern int foreground_process_id;
 
 int background_processes_array[2048];
 
@@ -46,14 +46,15 @@ void add_to_background(int process_id)
     return ;
 }
 
-void print_info(int process_id, int job_number)
+int print_info(int process_id, int job_number)
 {
     char* name = (char*)calloc(1024,sizeof(char));
     if(name)
     {
         sprintf(name, "/proc/%d/comm",process_id);
         FILE* f = fopen(name,"r");
-        if(f)
+
+        if(f!=NULL)
         {
             size_t size;
             size = fread(name, sizeof(char), 1024, f);
@@ -64,7 +65,12 @@ void print_info(int process_id, int job_number)
             }
             fclose(f);
         }
+        else
+        {
+            return -1;
+        }
     }
+
 
     char *arr =  malloc(1024*sizeof(char));    
     char *id =  malloc(1024*sizeof(char));    
@@ -76,7 +82,7 @@ void print_info(int process_id, int job_number)
     if(stat_file)
     {
         FILE * data = fopen(stat_file, "r");
-        if(data)
+        if(data!=NULL)
         {
             int field = 0;
             while(field < 4)
@@ -105,24 +111,31 @@ void print_info(int process_id, int job_number)
                 field++;
             }
         }
+        else
+        {
+            return -1;
+        }
         fclose(data);        
     }
     char proc_id[100];
     sprintf(proc_id, "%d", process_id);
     printf("[%d] : %s %s [%s]\n",job_number, status , name, proc_id);
 
-    return;
+    return 1;
 
 }
 
 void jobs_list(char ** argv , int arg)
 {
-    // okay so the idea is that I have the list of all jobs , and the idea is that the latest one are at the current counter
-    // so I'll take the list of all jobs and print out their info side by side
-    // then in the end, I'll take the foreground one and put out it's data too
+    int counter = 1;
     for(int i = 0 ; i < (background_counter); i++)
     {
-        print_info(background_processes_array[i], i+1); // this is the oldest -> newest order
+        int a = print_info(background_processes_array[i], counter); // this is the oldest -> newest order
+        if(a > 0)
+        {
+            // mean it was a success
+            counter++;
+        }
     }
     return ;
 }
@@ -159,8 +172,7 @@ void overkill_func()
 }
 void fg_function(char ** argv, int arg)
 {
-    printf("in the fg functio now\n");
-    // argv[1] is the pid
+    
     int job_number = atoi(argv[1]) -1;
     if(job_number > background_counter)
     {
@@ -176,18 +188,16 @@ void fg_function(char ** argv, int arg)
     }
     else
     {
-        printf("about to send signal \n");
         foreground_process_id = job;
+        
         tcsetpgrp(0,job);
         kill(job, SIGCONT);
         signal(SIGTTOU, SIG_IGN);
         int stat;
         waitpid(job, &stat , WUNTRACED);
+        // setpgid(getpid(), getpid());
         tcsetpgrp(0, getpid());
-        // tcsetpgrp(0, getpid());
     }
-    
-
     return ;
 }
 
