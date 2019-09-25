@@ -1,22 +1,20 @@
-jobs
 vim &
-htop &
-vim &
-fg 1
 jobs
-top  &
-nano &
-ls
-htop &
-vim  &
-jobs
-fg 1
+quit
 vim &
-clera
+jobs
+vim test.c &
+jobs
 clear
-htop &
-vim &
-htop &
+overkill
+
 jobs
-fg 2
-vim &
+clear
+quit
+r
+e
+e
+e
+e
+e
+quit

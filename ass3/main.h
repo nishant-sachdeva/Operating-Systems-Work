@@ -31,6 +31,7 @@ void send_to_Chandler(int signal);
 
 void send_to_Zhandler(int signal);
 
+int check_for_up_arrow_keys(char inp[], char home_path[]);
 
 void deal_with_background();
 

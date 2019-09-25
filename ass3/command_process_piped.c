@@ -3,8 +3,27 @@
 
 void do_work(char inp[], char home_path[])
 {
-
+	int val = check_for_up_arrow_keys(inp , home_path);
+	if(val == -1)
+		return;
+	else if(val == 0)
+	{
+		// we have the desired command, print it and then execute it
+		printf("\n");
+		displayPrompt(home_path);
+		printf("%s\n", inp);
+	}
+	else if(val == 4)
+	{
+		// printf("value returned is 4\n");
+		// do nothig
+	}
 	add_to_history(inp, home_path);
+
+	
+	// now we can go on with the execution
+	
+	
 	char *secondary;
 	char *command = strtok_r(inp, ";", &secondary);
 	// step 1, semicolon separation
@@ -18,6 +37,9 @@ void do_work(char inp[], char home_path[])
 
 		dup2(saved_stdin, 0);
 		close(saved_stdin);
+
+		// check for up arrow keys
+
 
 		char * secondary_pipe;
 
@@ -185,7 +207,6 @@ void do_work(char inp[], char home_path[])
 			}
 			}
 
-			// so if we are here, that means that kuch piping hai(mostly) and now we assign pipes
 
 
 			int fd[2] ; // in/out pipe ends
@@ -219,6 +240,9 @@ void do_work(char inp[], char home_path[])
 				}
 
 				diversion(input_redirection, output_redirection, append_output, redirect);
+
+				// here we check for the command being made of up arrow  keys and deal with it accordingly
+				
 
 				if(arg != 0) // cuz null seh comparison gives us a seg fault
 				{
@@ -283,13 +307,14 @@ void do_work(char inp[], char home_path[])
 					add_to_foreground((int)pid);
 					// (void)waitpid(pid, &status, 0);
 					waitpid(pid, &status, WUNTRACED);
-					setpgid(0,0);
-
 				}
 				if(background_required == 1)
 				{
 					add_to_background((int)pid);
+					// kill(pid, SIGTTOU);
+
 					deal_with_background();
+
 				}
 				if(strcmp(secondary_pipe, "\0") != 0)
 				{

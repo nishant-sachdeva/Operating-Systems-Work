@@ -48,20 +48,30 @@ void add_to_background(int process_id)
 
 int print_info(int process_id, int job_number)
 {
+    char newname[1024] = {0};
+    char folder[1024] = {0};
     char* name = (char*)calloc(1024,sizeof(char));
     if(name)
     {
-        sprintf(name, "/proc/%d/comm",process_id);
-        FILE* f = fopen(name,"r");
+        sprintf(folder, "/proc/%d/cmdline",process_id);
+        FILE* f = fopen(folder,"r");
 
         if(f!=NULL)
         {
             size_t size;
             size = fread(name, sizeof(char), 1024, f);
+            for(int i = 0 ; i<sizeof(name) ;i++ )
+            {
+                if(name[i] == '\0')
+                {
+                    name[i] = ' ';
+                }
+            }
+            sprintf(newname, "%s", name);
             if(size>0)
             {
-                if('\n'==name[size-1])
-                    name[size-1]='\0';
+                if('\n'==newname[size-1])
+                    newname[size-1]='\0';
             }
             fclose(f);
         }
@@ -119,7 +129,7 @@ int print_info(int process_id, int job_number)
     }
     char proc_id[100];
     sprintf(proc_id, "%d", process_id);
-    printf("[%d] : %s %s [%s]\n",job_number, status , name, proc_id);
+    printf("[%d] : %s %s [%s]\n",job_number, status , newname, proc_id);
 
     return 1;
 
@@ -144,8 +154,42 @@ void kjobs(char ** argv, int arg)
 {
     // so argv[1] is the job number in string form
     // argv[2] is the signal number in string form
-    int job = atoi(argv[1]);
+    int job_number = atoi(argv[1]) - 1;
     int signal = atoi(argv[2]);
+
+    if(job_number > background_counter)
+    {
+        printf("Error: job dosen't exist\n");
+        return;
+    }
+    // given the job number I want the second job that exists in my list
+    int counter = 0, found_job = 0;
+    for(int i = 0 ; i < background_counter; i++)
+    {
+        int job = background_processes_array[i];
+        if(kill(job,0) != -1)
+        {
+            // printf("job number %d of id %d exists\n", i, job);
+            if(counter == job_number)
+            {
+                // this is our jobs
+                found_job = 1;
+                job_number = i;
+                break;
+            }
+            counter++;
+
+            // printf("counter is  %d job number is %d\n", counter-1, job_number);
+        }
+        else
+        {
+            // printf("job number %d of id %d  does not exist\n", i, job);
+        }
+               
+    }
+            // printf("counter is  %d job number is %d\n", counter, job_number);
+
+    int job = background_processes_array[job_number];
 
     if(kill(job,signal) == -1)
     {
@@ -179,17 +223,36 @@ void fg_function(char ** argv, int arg)
         printf("Error: job dosen't exist\n");
         return;
     }
-    // int signal = 0;
-    int job = background_processes_array[job_number];
-    if(kill(job, 0) == -1)
+    // given the job number I want the second job that exists in my list
+    int counter = 0, found_job = 0;
+    for(int i = 0 ; i < background_counter; i++)
     {
-        printf("Error: couldn't access job with pid %d\n", job);
+        int job = background_processes_array[i];
+        if(kill(job,0) != -1)
+        {
+            if(counter == job_number)
+            {
+                // this is our jobs
+                found_job = 1;
+                job_number = i;
+                break;
+            }
+            counter++;
+
+        }
+               
+    }
+    int job = background_processes_array[job_number];
+    if(found_job != 1)
+    {
+        printf("Error: couldn't access job :(\n");
         return;
     }
     else
     {
+        // yhaan we are in the parent process
+        pid_t foreground = tcgetpgrp(0);
         foreground_process_id = job;
-        
         tcsetpgrp(0,job);
         kill(job, SIGCONT);
         signal(SIGTTOU, SIG_IGN);
@@ -197,6 +260,7 @@ void fg_function(char ** argv, int arg)
         waitpid(job, &stat , WUNTRACED);
         // setpgid(getpid(), getpid());
         tcsetpgrp(0, getpid());
+        signal(SIGTTOU, SIG_DFL);
     }
     return ;
 }
