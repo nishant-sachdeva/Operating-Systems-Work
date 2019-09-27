@@ -16,6 +16,7 @@ void ctrlZhandler(int signal1)
 	signal(SIGTSTP, ctrlZhandler);
 	signal(SIGTTOU, SIG_IGN);
 	add_to_background(foreground_process_id);
+	
 	// kill(getpid(),SIGTSTP);
 }
 

@@ -1,20 +1,20 @@
-vim &
-jobs
-quit
-vim &
-jobs
-vim test.c &
-jobs
 clear
+cat &
+jobs
+bg 1
+jobs
+fg 1
+clear
+clear
+quit
+sleep 5 &
+
+vim &
+jobs
 overkill
 
-jobs
 clear
-quit
-r
-e
-e
-e
-e
-e
+ls
+clear
+ls
 quit

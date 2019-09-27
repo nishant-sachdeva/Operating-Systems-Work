@@ -207,9 +207,12 @@ void overkill_func()
 {
     for (int i = 0; i < background_counter; i++)
     {
-        if(kill(background_processes_array[i], 9) == -1)
+        if(kill(background_processes_array[i], 0) !=-1)
         {
-            printf("Couldn't kill %d\n", background_processes_array[background_counter]);
+            if(kill(background_processes_array[i], 9) == -1)
+            {
+                printf("Couldn't kill %d\n", background_processes_array[background_counter]);
+            }
         }
     }
     return;
@@ -245,7 +248,7 @@ void fg_function(char ** argv, int arg)
     int job = background_processes_array[job_number];
     if(found_job != 1)
     {
-        printf("Error: couldn't access job :(\n");
+        printf("Error: couldn't access the specefied job :(\n");
         return;
     }
     else
@@ -253,11 +256,20 @@ void fg_function(char ** argv, int arg)
         // yhaan we are in the parent process
         pid_t foreground = tcgetpgrp(0);
         foreground_process_id = job;
-        tcsetpgrp(0,job);
+        if(__getpgid(job) != __getpgid(0))
+        {
+            tcsetpgrp(0,job);
+        }
+        else
+        {
+            tcsetpgrp(job, job);
+        }
+        
         kill(job, SIGCONT);
-        signal(SIGTTOU, SIG_IGN);
         int stat;
         waitpid(job, &stat , WUNTRACED);
+
+        signal(SIGTTOU, SIG_IGN);
         // setpgid(getpid(), getpid());
         tcsetpgrp(0, getpid());
         signal(SIGTTOU, SIG_DFL);
@@ -273,10 +285,28 @@ void bg_function(char ** argv, int arg)
         printf("Error: job dosen't exist\n");
         return;
     }
+    int counter = 0, found_job = 0;
+    for(int i = 0 ; i < background_counter; i++)
+    {
+        int job = background_processes_array[i];
+        if(kill(job,0) != -1)
+        {
+            if(counter == job_number)
+            {
+                // this is our jobs
+                found_job = 1;
+                job_number = i;
+                break;
+            }
+            counter++;
+
+        }
+               
+    }
     int job = background_processes_array[job_number];
     if(kill(job, 0) == -1)
     {
-        printf("Error: couldn't access job with pid %d\n", job);
+        printf("Error: couldn't access the specified job\n");
         return;
     }
     else
