@@ -1,6 +1,3 @@
-cd ..
-ls
-cd seem3	
 ls
 cd sem3
 clear
@@ -17,4 +14,7 @@ cd //
 ls
 cd -
 clear
+quit
+ls
+quir
 quit
