@@ -20,29 +20,42 @@ int * shareMem(size_t size){
     return (int*)shmat(shm_id, NULL, 0);
 }
 
-
-void merge(int *arr, int l, int r){
-    int mid = (l+r)/2;
-    int *sorted = (int*)malloc(sizeof(int)*(r-l+1));
-    int j=mid+1, c=0, i=0;
-
-    for(i=l;i<=mid;i++){
-        for(;j<=r && arr[j]<=arr[i];j++)
-            sorted[c++]=arr[j];
-        sorted[c++] = arr[i];
-    }
-
-    while(i<=mid) sorted[c++]=arr[i++];
-    while(j<=r) sorted[c++]=arr[j++];
-
-    for(i=0;i<c;i++) 
-        arr[l+i]=sorted[i];
-    // This last loop took care of all the arrays and ensure that *arr has the final sorted section of the array
-
-    free(sorted);
+void swap(int * a,  int *b)
+{
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+    
+    return;
 }
 
-void normal_mergesort(int *arr, int l, int r){
+int partition(int arr[], int low, int high)
+{
+    int pivot = rand()%high;
+    if(pivot < low)
+    {
+        pivot = (low+high)/2;
+    }
+
+    swap( &arr[high], &arr[pivot] );
+    int i = low - 1;
+    for(int j = low ; j<= high -1 ; j++)
+    {
+        if(arr[j] < arr[high]) // because array[high] has the pivot element now
+        {
+            i++;
+            swap(&arr[i], &arr[j]);
+        }
+    }
+    swap(&arr[i+1], &arr[high]);
+
+    return i+1;
+}
+
+
+
+
+void normal_quick_sort(int *arr, int l, int r){
     if(l>r) return;
 
     //insertion sort
@@ -61,13 +74,13 @@ void normal_mergesort(int *arr, int l, int r){
         }
         return;
     }
-
-    normal_mergesort(arr, l, (l+r)/2);
-    normal_mergesort(arr, (l+r)/2+1, r);
-    merge(arr, l, r);
+    int pi = partition(arr, l, r);
+    normal_quick_sort(arr, l, pi-1);
+    normal_quick_sort(arr, pi+1, r);
+    return;
 }
 
-void mergesort(int *arr, int l, int r){
+void quick_sort(int *arr, int l, int r){
     if(l>r) 
         _exit(1);    
     
@@ -88,19 +101,21 @@ void mergesort(int *arr, int l, int r){
         }
         return;
     } 
+    int pi = partition(arr, l, r);
+
 
     int pid1 = fork();
     int pid2;
     if(pid1==0){
         //sort left half array
-        mergesort(arr, l, (l+r)/2);
+        quick_sort(arr, l, pi-1);
         _exit(1);
     }
     else{
         pid2 = fork();
         if(pid2==0){
             //sort right half array
-            mergesort(arr,(l+r)/2+1,r);
+            quick_sort(arr, pi+1, r);
             _exit(1);
         }
         else{
@@ -110,7 +125,6 @@ void mergesort(int *arr, int l, int r){
             waitpid(pid2, &status, 0);
         }
     }
-    merge(arr, l, r);
     return;
 }
 
@@ -120,7 +134,7 @@ struct arg{
     int* arr;    
 };
 
-void *threaded_mergesort(void* a){
+void *threaded_quick_sort(void* a){
     //note that we are passing a struct to the threads for simplicity.
     struct arg *args = (struct arg*) a;
 
@@ -145,29 +159,29 @@ void *threaded_mergesort(void* a){
         }
         return NULL;
     }
-
+    int pi = partition(arr, l, r);
     //sort left half array
     struct arg a1;
     a1.l = l;
-    a1.r = (l + r)/2;
+    a1.r = pi -1;
     a1.arr = arr;
     pthread_t tid1;
-    pthread_create(&tid1, NULL, threaded_mergesort, &a1);
+    pthread_create(&tid1, NULL, threaded_quick_sort, &a1);
     
     //sort right half array
     struct arg a2;
-    a2.l = (l+r)/2+1;
+    a2.l = pi+1;
     a2.r = r;
     a2.arr = arr;
     pthread_t tid2;
-    pthread_create(&tid2, NULL, threaded_mergesort, &a2);
+    pthread_create(&tid2, NULL, threaded_quick_sort, &a2);
     
     //wait for the two halves to get sorted
     pthread_join(tid1, NULL);
     pthread_join(tid2, NULL);
-    
-    merge(arr,l,r);
+
 }
+
 
 void runSorts(long long int n){
 
@@ -183,7 +197,12 @@ void runSorts(long long int n){
     long double st = ts.tv_nsec/(1e9)+ts.tv_sec;
 
     //multiprocess mergesort
-    mergesort(arr, 0, n-1);
+    quick_sort(arr, 0, n-1);
+
+    for(int i = 0 ; i<n ; i++)
+        printf("%d ", arr[i]);
+        
+    printf("\n");
     
     clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
     long double en = ts.tv_nsec/(1e9)+ts.tv_sec;
@@ -199,17 +218,25 @@ void runSorts(long long int n){
     a.l = 0;
     a.r = n-1;
     a.arr = brr;
+
     printf("Running threaded_concurrent_mergesort for n = %lld\n", n);
     clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
     st = ts.tv_nsec/(1e9)+ts.tv_sec;
 
     //multithreaded mergesort
-    pthread_create(&tid, NULL, threaded_mergesort, &a);
+    pthread_create(&tid, NULL, threaded_quick_sort, &a);
     pthread_join(tid, NULL);    
     
     clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
     en = ts.tv_nsec/(1e9)+ts.tv_sec;
+
+    for(int i = 0; i<n ; i++)
+    {
+        printf("%d ", a.arr[i]);
+    }
+    printf("\n");
     printf("time = %Lf\n", en - st);
+
     long double t2 = en-st;
 
     printf("Running normal_mergesort for n = %lld\n", n);
@@ -217,7 +244,13 @@ void runSorts(long long int n){
     st = ts.tv_nsec/(1e9)+ts.tv_sec;
 
     // normal mergesort
-    normal_mergesort(brr, 0, n-1);    
+    normal_quick_sort(brr, 0, n-1);
+
+    
+    for(int i = 0 ; i<n ; i++)
+        printf("%d ", brr[i]);
+        
+    printf("\n");    
     
     clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
     en = ts.tv_nsec/(1e9)+ts.tv_sec;
