@@ -1,10 +1,14 @@
 #include "main.h"
 
+
+int m; // m is the number of chefs
+int n; // n is the number of serving tables
+int k; // k is the number of students
+
+
 int main()
 {
-    int m; // m is the number of chefs
-    int n; // n is the number of serving tables
-    int k; // k is the number of students
+    srand((unsigned)time(NULL)); // this is for giving proper random numbers for the values that we need for the servings
 
     printf("Number of chefs: ");
     scanf("%d", &m);
