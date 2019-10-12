@@ -1,4 +1,4 @@
-CC=gcc -pthread
+CC=gcc -O3 -g -pthread
 
 FILES = *.c
 
