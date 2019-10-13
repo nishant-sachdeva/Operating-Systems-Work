@@ -19,7 +19,9 @@ void take_cab(int passenger_number);
 
 void init_all_payment_servers();
 
-void do_payment(int cab_number, int status);
+void wait_for_payment(int cab_slot);
+
+void do_payment(int cab_number, int status, int passenger_number);
 
 void init_all_servers(int n);
 
