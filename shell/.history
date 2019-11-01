@@ -1,8 +1,3 @@
-ls
-cd sem3
-clear
-ls
-cd oOperating-Systems-Work
 clear
 ls
 cd Operating-Systems-Work
@@ -17,4 +12,9 @@ clear
 quit
 ls
 quir
+quit
+ks
+ls
+clear
+exit
 quit
