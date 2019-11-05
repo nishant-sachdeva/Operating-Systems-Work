@@ -1,9 +1,3 @@
-clear
-ls
-cd Operating-Systems-Work
-ls
-cd ass3
-clear
 ls
 cd //
 ls
@@ -17,4 +11,10 @@ ks
 ls
 clear
 exit
+quit
+ls
+cler
+c
+clear
+ls
 quit
