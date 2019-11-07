@@ -5,7 +5,7 @@
 #include "user.h"
 #include "fcntl.h"
 
-char *argv[] = { "This is the new sh that I am building. Thanks for being here!", 0 };
+char *argv[] = { "sh", 0 };
 
 int
 main(void)

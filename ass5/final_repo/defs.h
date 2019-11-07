@@ -128,6 +128,7 @@ void increment_times(void);
 // here we add the functions for the new sys  calls
 int 			getpinfo(struct proc_stat*, int) ;  // at the moment, it is being modelled as just a ps  system call and it will be modified later as I learn more
 int 			waitx(int * , int * );
+int 			setpriority(int, int );
 // swtch.S
 void            swtch(struct context**, struct context*);
 

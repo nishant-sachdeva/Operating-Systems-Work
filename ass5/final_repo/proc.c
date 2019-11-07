@@ -6,9 +6,6 @@
 #include "x86.h"
 #include "proc.h"
 #include "spinlock.h"
-#include "traps.h"
-#include "proc_stat.h"
-
 
 struct {
   struct spinlock lock;
@@ -85,7 +82,6 @@ allocproc(void)
     if(p->state == UNUSED)
       goto found;
 
-  // if we didn't find an unused process, this thing will exit and that will be that, else we will just get back to normal work
   release(&ptable.lock);
   return 0;
 
@@ -116,24 +112,6 @@ found:
   memset(p->context, 0, sizeof *p->context);
   p->context->eip = (uint)forkret;
 
-  //here I initialise the field and do the rest of the work
-  p->ctime = ticks;
-  p->rtime = 0;
-  p->etime = -1;
-  p->num_run = 0;
-  p->time_in_queues = 0;
-  p->wait_time = ticks - p->ctime;
-
-
-  // I intend to have a section here for initialising the struct_stat data structure;
-  // well as of now, since I am not quite sure how to go about implementing it, I shall just use the variables here itself, and then later, 
-  // maybe with more guidance, i can somehow improve on it
-
-
-  //store these values. the values can be read normally. the updation can of the time fields
-  // can be done correctly when i modify the schedulers maybe but until then, let it be just this and waitx and the 
-  // should they want so badly, can simply should read and display them.
-
   return p;
 }
 
@@ -146,10 +124,6 @@ userinit(void)
   extern char _binary_initcode_start[], _binary_initcode_size[];
 
   p = allocproc();
-
-  cprintf("the  process has been called. we are starting work\n");
-  int current_time = ticks;
-  cprintf(" c time of the process was %d and the current time is %d\n",p->  ctime , current_time);
   
   initproc = p;
   if((p->pgdir = setupkvm()) == 0)
@@ -286,9 +260,7 @@ exit(void)
         wakeup1(initproc);
     }
   }
-  curproc->etime = ticks;
-  curproc->wait_time = curproc->etime - curproc->ctime - curproc->rtime;
-  cprintf("creation time : %d run_time = %d end_time = %d wait time = %d\n", curproc->ctime , curproc->rtime , curproc->etime , curproc->wait_time);
+
   // Jump into the scheduler, never to return.
   curproc->state = ZOMBIE;
   sched();
@@ -309,18 +281,10 @@ wait(void)
     // Scan through table looking for exited children.
     havekids = 0;
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      // we want chilren for our curproc 
       if(p->parent != curproc)
         continue;
-
-      // being here means that we found a guy whose parent is our current process
-      // hence we wait for it to exit (or do something whose status will be reported)
-
       havekids = 1;
-      
-        // here all the updates have been made properly
-        if(p->state == ZOMBIE){
-
+      if(p->state == ZOMBIE){
         // Found one.
         pid = p->pid;
         kfree(p->kstack);
@@ -342,68 +306,6 @@ wait(void)
       return -1;
     }
 
-    // Wait for children to exit.  (See wakeup1 call in proc_exit.)
-    sleep(curproc, &ptable.lock);  //DOC: wait-sleep
-  }
-}
-
-
-int
-waitx(int *wtime, int *rtime)
-{
-  struct proc *p;
-  int havekids, pid;
-
-  struct proc *curproc = myproc();
-
-
-  acquire(&ptable.lock);
-  for(;;)
-  {
-    // Scan through table looking for zombie children.
-    havekids = 0;
-    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
-    {
-      if(p->parent != curproc)  // proc is suppossed to be the parent , but how are we checking this ? 
-        continue;
-      havekids = 1;
-      if(p->state == ZOMBIE)
-      {
-        // Found one.
-
-          if (p->etime == -1) // it was initialised as -1 , so just in case something has been going wrong
-          {
-            int current_time = ticks;
-            *wtime = current_time- p->ctime - p->rtime;
-          }
-          else
-          {
-            *wtime = p->etime - p->ctime - p->rtime ;  // end time - creation time - running time;
-          }
-
-        *rtime = p->rtime;  // running time
-
-        // same as wait 
-        pid = p->pid;
-        kfree(p->kstack);
-        p->kstack = 0;
-        freevm(p->pgdir);
-        p->state = UNUSED;
-        p->pid = 0;
-        p->parent = 0;
-        p->name[0] = 0;
-        p->killed = 0;
-        release(&ptable.lock);
-        return pid;
-        // so just like the wait sys call we return either the pid or a -1
-      }
-    }
-
-    // No point waiting if we don't have any children.
-    if(!havekids || curproc->killed){
-      release(&ptable.lock);
-      return -1;
-    }
     // Wait for children to exit.  (See wakeup1 call in proc_exit.)
     sleep(curproc, &ptable.lock);  //DOC: wait-sleep
   }
@@ -428,34 +330,20 @@ scheduler(void)
     // Enable interrupts on this processor.
     sti();
 
-    // {{ this here looks like a first come first serve scheduling }}
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
       if(p->state != RUNNABLE)
         continue;
 
-
-      //{{ the loop continues until it finds runnable process and then it takes runs it }}
-      // {{ also atm, it is just the first come first serve scheduling }}
-
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
-
       c->proc = p;
       switchuvm(p);
       p->state = RUNNING;
 
-      // int start_run_time = ticks;
-      p->num_run ++;
-      // since it is being called, it will be incremented
-
       swtch(&(c->scheduler), p->context);
-      
-      // one interesting thing about knowing time this way is that we perhaps miss out on the runtime updates
-
-
       switchkvm();
 
       // Process is done running for now.
@@ -642,71 +530,5 @@ procdump(void)
         cprintf(" %p", pc[i]);
     }
     cprintf("\n");
-  }
-}
-
-
-int getpinfo(struct proc_stat * process, int pid)
-{
-  struct proc *p;
-  // cprintf("the pid we are trying to find is %d\n", pid);
-  // enable interrupts on  this processeor
-  sti();
-
-  // loop over the process table looking for processes with  pid
-  acquire(&ptable.lock);
-  int found = 0;
-
-  for(p = ptable.proc ; p< &ptable.proc[NPROC] ; p++)
-  {
-    if(p->pid == pid)
-    {
-      found = 1 ;
-      // now we will allocate the appropirate fields to the proc_Stat thing
-      process->runtime = p->rtime;
-      process->num_run = p->num_run;
-      process->pid = p->pid;
-
-      // this finishes the allocatation
-      cprintf("ID : %d  Num run : %d Run Time : %d\n", process->pid, process->num_run , process->runtime);
-    }
-  }
-
-  if(found == 0)
-  {
-    cprintf("the process was not found ::((. Please retry with maybe a correct pid. Below is the list of all Pids for reference\n");
-    for(p = ptable.proc ; p< &ptable.proc[NPROC] ; p++)
-    {
-      if(p->state == UNUSED)
-        continue;  
-      cprintf("Pid %d name : %s \n", p->pid, p->name);
-    }
-  }
-
-  // here I merely have to fill up the proc_stat structure
-  release(&ptable.lock);
-  return 22;
-}
-
-
-
-void increment_times(void)
-{
-  struct proc * p;
-
-  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
-  {
-    // increment times in every table
-    if(p->state ==~ UNUSED)
-      continue;
-    
-    if(p->state == RUNNING)
-    {
-      p->rtime++;
-    }
-    else if(p->state == RUNNABLE)
-    {
-      p->time_in_queues++;
-    }
   }
 }

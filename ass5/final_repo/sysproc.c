@@ -6,7 +6,6 @@
 #include "memlayout.h"
 #include "mmu.h"
 #include "proc.h"
-#include "proc_stat.h"
 
 int
 sys_fork(void)
@@ -89,39 +88,4 @@ sys_uptime(void)
   xticks = ticks;
   release(&tickslock);
   return xticks;
-}
-
-
-int
-sys_getpinfo(void)
-{
-  // this is the thing that we 
-  struct proc_stat * p;
-  if(argptr(0, (char**)&p, sizeof(struct proc_stat)) < 0)
-    return -1;
-
-  int pid;
-  if(argint(1, &pid) < 0)
-    return -1;
-  // cprintf("pid from syproc file %d\n" , (pid));
-
-  return getpinfo(p, pid);
-}
-
-
-int
-sys_waitx(void)
-{
-
-  int *wtime;
-  int *rtime;
-  
-  if(argptr(0, (char**)&wtime, sizeof(int)) < 0)
-    return -1;
-
-  if(argptr(1, (char**)&rtime, sizeof(int)) < 0)
-    return -1;
-
-  return waitx(wtime, rtime);
-  // this function has been referenced from online codes
 }

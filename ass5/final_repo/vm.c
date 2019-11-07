@@ -156,8 +156,6 @@ switchkvm(void)
 void
 switchuvm(struct proc *p)
 {
-  int start_time = ticks;
-  // cprintf("process %d : %s has been scheduled\n",p->pid , p->name);
   if(p == 0)
     panic("switchuvm: no process");
   if(p->kstack == 0)
@@ -177,9 +175,6 @@ switchuvm(struct proc *p)
   ltr(SEG_TSS << 3);
   lcr3(V2P(p->pgdir));  // switch to process's address space
   popcli();
-  int run_time  = ticks - start_time;
-  p->rtime += run_time;
-  // cprintf("process %d : %s is being Deallocated\n", p->pid , p->name);
 }
 
 // Load the initcode into address 0 of pgdir.

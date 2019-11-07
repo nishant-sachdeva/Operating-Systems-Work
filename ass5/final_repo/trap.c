@@ -51,11 +51,6 @@ trap(struct trapframe *tf)
     if(cpuid() == 0){
       acquire(&tickslock);
       ticks++;
-
-      /* increment time with the functions */
-      increment_times();  // function to increment times
-
-      /* this ends the function  */
       wakeup(&ticks);
       release(&tickslock);
     }
@@ -115,6 +110,3 @@ trap(struct trapframe *tf)
   if(myproc() && myproc()->killed && (tf->cs&3) == DPL_USER)
     exit();
 }
-
-
-
