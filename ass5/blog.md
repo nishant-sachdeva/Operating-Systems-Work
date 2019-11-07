@@ -39,3 +39,5 @@ s see how it goes. Work starts . Mostly a fight to the finish except the possibi
 9'33 pm : Getpinfo seems to be working fine atm , so here's what we will look to do , spend 10 mins and try to fix the part where the run time seems to be going all wron
 
 9'33 pm : Getpinfo seems to be working fine atm , so here's what we will look to do , spend 10 mins and try to fix the part where the run time seems to be going all wrong. So , over and back it is, so let's see what happens
+
+10'53 pm : the first task is done. so some relief is there. now , i will get to work with the remaining tasks
