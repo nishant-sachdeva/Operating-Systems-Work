@@ -55,6 +55,7 @@ struct proc {
   int rtime;                   // total time
   int etime;                   // end time
   int num_run;
+  int time_in_queues;
   int wait_time;
 
 };

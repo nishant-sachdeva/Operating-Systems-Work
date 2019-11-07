@@ -33,7 +33,7 @@ int main(int argc, char const *argv[])
   1c:	5a                   	pop    %edx
   1d:	59                   	pop    %ecx
   1e:	50                   	push   %eax
-  1f:	8d 45 ec             	lea    -0x14(%ebp),%eax
+  1f:	8d 45 e8             	lea    -0x18(%ebp),%eax
   22:	50                   	push   %eax
   23:	e8 fa 02 00 00       	call   322 <getpinfo>
 

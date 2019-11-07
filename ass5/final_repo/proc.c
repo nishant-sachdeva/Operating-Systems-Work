@@ -121,6 +121,7 @@ found:
   p->rtime = 0;
   p->etime = -1;
   p->num_run = 0;
+  p->time_in_queues = 0;
   p->wait_time = ticks - p->ctime;
 
 
@@ -446,14 +447,12 @@ scheduler(void)
       switchuvm(p);
       p->state = RUNNING;
 
-      int start_run_time = ticks;
+      // int start_run_time = ticks;
       p->num_run ++;
       // since it is being called, it will be incremented
 
       swtch(&(c->scheduler), p->context);
       
-      int end_run_time = ticks;
-      p->rtime = end_run_time - start_run_time ;
       // one interesting thing about knowing time this way is that we perhaps miss out on the runtime updates
 
 
@@ -687,4 +686,27 @@ int getpinfo(struct proc_stat * process, int pid)
   // here I merely have to fill up the proc_stat structure
   release(&ptable.lock);
   return 22;
+}
+
+
+
+void increment_times(void)
+{
+  struct proc * p;
+
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
+  {
+    // increment times in every table
+    if(p->state ==~ UNUSED)
+      continue;
+    
+    if(p->state == RUNNING)
+    {
+      p->rtime++;
+    }
+    else if(p->state == RUNNABLE)
+    {
+      p->time_in_queues++;
+    }
+  }
 }

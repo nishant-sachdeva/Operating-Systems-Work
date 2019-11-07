@@ -122,6 +122,9 @@ int             wait(void);
 void            wakeup(void*);
 void            yield(void);
 
+void increment_times(void);
+// this is the function to increment the times
+
 // here we add the functions for the new sys  calls
 int 			getpinfo(struct proc_stat*, int) ;  // at the moment, it is being modelled as just a ps  system call and it will be modified later as I learn more
 int 			waitx(int * , int * );
