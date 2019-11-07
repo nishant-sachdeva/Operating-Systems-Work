@@ -1,4 +1,5 @@
 struct stat;
+struct proc_stat;
 struct rtcdate;
 
 // system calls
@@ -26,7 +27,7 @@ int uptime(void);
 
 // here will  the custom functions
 
-int getpinfo(void);
+int getpinfo(struct proc_stat* , int pid);
 int waitx(int * wtime, int * rtime);
 
 // ulib.c

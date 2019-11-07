@@ -54,14 +54,20 @@ struct proc {
   int ctime;                   // creation time
   int rtime;                   // total time
   int etime;                   // end time
-
+  int num_run;
   int wait_time;
 
-  // the values will be allocated during initialisation, rest we will cover up here and there
-
-
-  
 };
+
+// struct proc_stat
+// {
+//   int pid; 
+//   int runtime;
+//   int num_run;
+//   // int current_queue;  // this will tell for multi queue scheduling as to which queue does our guy currently belong
+//   // int ticks[5];  // this will tell for multi queue scheduling as to how much time has been spent in each queue
+
+// };
 
 // Process memory is laid out contiguously, low addresses first:
 //   text

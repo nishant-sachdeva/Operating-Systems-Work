@@ -6,6 +6,7 @@
 #include "memlayout.h"
 #include "mmu.h"
 #include "proc.h"
+#include "proc_stat.h"
 
 int
 sys_fork(void)
@@ -94,8 +95,17 @@ sys_uptime(void)
 int
 sys_getpinfo(void)
 {
+  // this is the thing that we 
+  struct proc_stat * p;
+  if(argptr(0, (char**)&p, sizeof(struct proc_stat)) < 0)
+    return -1;
 
-  return getpinfo();
+  int pid;
+  if(argint(1, &pid) < 0)
+    return -1;
+  // cprintf("pid from syproc file %d\n" , (pid));
+
+  return getpinfo(p, pid);
 }
 
 

@@ -5,9 +5,9 @@ _getpinfo:     file format elf32-i386
 Disassembly of section .text:
 
 00000000 <main>:
-#include "stat.h"
-#include "user.h"
 #include "fcntl.h"
+#include "proc_stat.h"
+
 
 int main(int argc, char const *argv[])
 {
@@ -17,20 +17,28 @@ int main(int argc, char const *argv[])
    a:	55                   	push   %ebp
    b:	89 e5                	mov    %esp,%ebp
    d:	51                   	push   %ecx
-   e:	83 ec 0c             	sub    $0xc,%esp
-	printf(1,"Yo sup machass!! Ima give you the details of the processes\n");
-  11:	68 38 07 00 00       	push   $0x738
-  16:	6a 01                	push   $0x1
-  18:	e8 c3 03 00 00       	call   3e0 <printf>
-	
-	getpinfo();
-  1d:	e8 00 03 00 00       	call   322 <getpinfo>
+   e:	83 ec 20             	sub    $0x20,%esp
+  11:	8b 41 04             	mov    0x4(%ecx),%eax
+	//printf(1,"Yo sup machass!! Ima give you the details of the processes\n");
+
+	// here we will declare the two guys
+	struct proc_stat p;
+	// printf(1,"we are trying to find the details of pid %s\n" , argv[1]);
+	int pid  = atoi(argv[1]);
+  14:	ff 70 04             	pushl  0x4(%eax)
+  17:	e8 f4 01 00 00       	call   210 <atoi>
+	// printf(1 , "%d\n", atoi(argv[1]) );
+
+	getpinfo(&p , pid);
+  1c:	5a                   	pop    %edx
+  1d:	59                   	pop    %ecx
+  1e:	50                   	push   %eax
+  1f:	8d 45 ec             	lea    -0x14(%ebp),%eax
+  22:	50                   	push   %eax
+  23:	e8 fa 02 00 00       	call   322 <getpinfo>
 
 	exit();
-  22:	e8 5b 02 00 00       	call   282 <exit>
-  27:	66 90                	xchg   %ax,%ax
-  29:	66 90                	xchg   %ax,%ax
-  2b:	66 90                	xchg   %ax,%ax
+  28:	e8 55 02 00 00       	call   282 <exit>
   2d:	66 90                	xchg   %ax,%ax
   2f:	90                   	nop
 
@@ -620,7 +628,7 @@ printint(int fd, int xx, int base, int sgn)
  372:	31 d2                	xor    %edx,%edx
  374:	8d 7e 01             	lea    0x1(%esi),%edi
  377:	f7 f1                	div    %ecx
- 379:	0f b6 92 7c 07 00 00 	movzbl 0x77c(%edx),%edx
+ 379:	0f b6 92 40 07 00 00 	movzbl 0x740(%edx),%edx
   }while((x /= base) != 0);
  380:	85 c0                	test   %eax,%eax
     buf[i++] = digits[x % base];
@@ -911,7 +919,7 @@ printf(int fd, const char *fmt, ...)
  592:	31 ff                	xor    %edi,%edi
  594:	e9 8f fe ff ff       	jmp    428 <printf+0x48>
           s = "(null)";
- 599:	bb 74 07 00 00       	mov    $0x774,%ebx
+ 599:	bb 38 07 00 00       	mov    $0x738,%ebx
         while(*s != 0){
  59e:	b8 28 00 00 00       	mov    $0x28,%eax
  5a3:	e9 72 ff ff ff       	jmp    51a <printf+0x13a>
@@ -932,7 +940,7 @@ free(void *ap)
 
   bp = (Header*)ap - 1;
   for(p = freep; !(bp > p && bp < p->s.ptr); p = p->s.ptr)
- 5b1:	a1 20 0a 00 00       	mov    0xa20,%eax
+ 5b1:	a1 e4 09 00 00       	mov    0x9e4,%eax
 {
  5b6:	89 e5                	mov    %esp,%ebp
  5b8:	57                   	push   %edi
@@ -973,7 +981,7 @@ free(void *ap)
     p->s.ptr = bp;
  5ed:	89 08                	mov    %ecx,(%eax)
   freep = p;
- 5ef:	a3 20 0a 00 00       	mov    %eax,0xa20
+ 5ef:	a3 e4 09 00 00       	mov    %eax,0x9e4
 }
  5f4:	5b                   	pop    %ebx
  5f5:	5e                   	pop    %esi
@@ -1005,7 +1013,7 @@ free(void *ap)
     p->s.size += bp->s.size;
  627:	03 53 fc             	add    -0x4(%ebx),%edx
   freep = p;
- 62a:	a3 20 0a 00 00       	mov    %eax,0xa20
+ 62a:	a3 e4 09 00 00       	mov    %eax,0x9e4
     p->s.size += bp->s.size;
  62f:	89 50 04             	mov    %edx,0x4(%eax)
     p->s.ptr = bp->s.ptr;
@@ -1038,7 +1046,7 @@ malloc(uint nbytes)
   nunits = (nbytes + sizeof(Header) - 1)/sizeof(Header) + 1;
  649:	8b 45 08             	mov    0x8(%ebp),%eax
   if((prevp = freep) == 0){
- 64c:	8b 15 20 0a 00 00    	mov    0xa20,%edx
+ 64c:	8b 15 e4 09 00 00    	mov    0x9e4,%edx
   nunits = (nbytes + sizeof(Header) - 1)/sizeof(Header) + 1;
  652:	8d 78 07             	lea    0x7(%eax),%edi
  655:	c1 ef 03             	shr    $0x3,%edi
@@ -1075,7 +1083,7 @@ malloc(uint nbytes)
       return (void*)(p + 1);
     }
     if(p == freep)
- 691:	39 05 20 0a 00 00    	cmp    %eax,0xa20
+ 691:	39 05 e4 09 00 00    	cmp    %eax,0x9e4
  697:	89 c2                	mov    %eax,%edx
  699:	75 ed                	jne    688 <malloc+0x48>
   p = sbrk(nu * sizeof(Header));
@@ -1094,7 +1102,7 @@ malloc(uint nbytes)
  6b5:	50                   	push   %eax
  6b6:	e8 f5 fe ff ff       	call   5b0 <free>
   return freep;
- 6bb:	8b 15 20 0a 00 00    	mov    0xa20,%edx
+ 6bb:	8b 15 e4 09 00 00    	mov    0x9e4,%edx
       if((p = morecore(nunits)) == 0)
  6c1:	83 c4 10             	add    $0x10,%esp
  6c4:	85 d2                	test   %edx,%edx
@@ -1123,7 +1131,7 @@ malloc(uint nbytes)
         p->s.size = nunits;
  6e4:	89 78 04             	mov    %edi,0x4(%eax)
       freep = prevp;
- 6e7:	89 15 20 0a 00 00    	mov    %edx,0xa20
+ 6e7:	89 15 e4 09 00 00    	mov    %edx,0x9e4
 }
  6ed:	8d 65 f4             	lea    -0xc(%ebp),%esp
       return (void*)(p + 1);
@@ -1137,13 +1145,13 @@ malloc(uint nbytes)
  6f8:	90                   	nop
  6f9:	8d b4 26 00 00 00 00 	lea    0x0(%esi,%eiz,1),%esi
     base.s.ptr = freep = prevp = &base;
- 700:	c7 05 20 0a 00 00 24 	movl   $0xa24,0xa20
- 707:	0a 00 00 
- 70a:	c7 05 24 0a 00 00 24 	movl   $0xa24,0xa24
- 711:	0a 00 00 
+ 700:	c7 05 e4 09 00 00 e8 	movl   $0x9e8,0x9e4
+ 707:	09 00 00 
+ 70a:	c7 05 e8 09 00 00 e8 	movl   $0x9e8,0x9e8
+ 711:	09 00 00 
     base.s.size = 0;
- 714:	b8 24 0a 00 00       	mov    $0xa24,%eax
- 719:	c7 05 28 0a 00 00 00 	movl   $0x0,0xa28
+ 714:	b8 e8 09 00 00       	mov    $0x9e8,%eax
+ 719:	c7 05 ec 09 00 00 00 	movl   $0x0,0x9ec
  720:	00 00 00 
  723:	e9 44 ff ff ff       	jmp    66c <malloc+0x2c>
  728:	90                   	nop

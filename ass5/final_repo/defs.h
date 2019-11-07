@@ -9,6 +9,7 @@ struct spinlock;
 struct sleeplock;
 struct stat;
 struct superblock;
+struct proc_stat;
 
 // bio.c
 void            binit(void);
@@ -122,7 +123,7 @@ void            wakeup(void*);
 void            yield(void);
 
 // here we add the functions for the new sys  calls
-int 			getpinfo(void) ;  // at the moment, it is being modelled as just a ps  system call and it will be modified later as I learn more
+int 			getpinfo(struct proc_stat*, int) ;  // at the moment, it is being modelled as just a ps  system call and it will be modified later as I learn more
 int 			waitx(int * , int * );
 // swtch.S
 void            swtch(struct context**, struct context*);

@@ -32,3 +32,10 @@ END OF DAY
 3'57 pm : waitx compiled. I assume that it's working the way it is suppossed to be working!! Yipee, finally some light at the end of the tunnel
 
 okay, bournvita break before I go over to the other one that has yet evaded me, the getpinfo thing. I supposse that will be nice to me as well. Let's see then. Bye for now
+
+5'43 pm : ahaan , it does appear so that I take irrationally long breaks. I mean no wonder, it's been approx 2 hrs since I left work for a "short" break. anyway , here I am , and now we will try and get getpinfo right. let
+s see how it goes. Work starts . Mostly a fight to the finish except the possibility of ending up around dinner time. and this dinner time I intend to postpone as much as possible. let's see how this session goes
+
+9'33 pm : Getpinfo seems to be working fine atm , so here's what we will look to do , spend 10 mins and try to fix the part where the run time seems to be going all wron
+
+9'33 pm : Getpinfo seems to be working fine atm , so here's what we will look to do , spend 10 mins and try to fix the part where the run time seems to be going all wrong. So , over and back it is, so let's see what happens

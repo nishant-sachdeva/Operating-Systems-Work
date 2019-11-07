@@ -7,6 +7,7 @@
 #include "proc.h"
 #include "spinlock.h"
 #include "traps.h"
+#include "proc_stat.h"
 
 
 struct {
@@ -119,7 +120,14 @@ found:
   p->ctime = ticks;
   p->rtime = 0;
   p->etime = -1;
+  p->num_run = 0;
   p->wait_time = ticks - p->ctime;
+
+
+  // I intend to have a section here for initialising the struct_stat data structure;
+  // well as of now, since I am not quite sure how to go about implementing it, I shall just use the variables here itself, and then later, 
+  // maybe with more guidance, i can somehow improve on it
+
 
   //store these values. the values can be read normally. the updation can of the time fields
   // can be done correctly when i modify the schedulers maybe but until then, let it be just this and waitx and the 
@@ -386,6 +394,7 @@ waitx(int *wtime, int *rtime)
         p->killed = 0;
         release(&ptable.lock);
         return pid;
+        // so just like the wait sys call we return either the pid or a -1
       }
     }
 
@@ -438,7 +447,9 @@ scheduler(void)
       p->state = RUNNING;
 
       int start_run_time = ticks;
-      
+      p->num_run ++;
+      // since it is being called, it will be incremented
+
       swtch(&(c->scheduler), p->context);
       
       int end_run_time = ticks;
@@ -636,27 +647,44 @@ procdump(void)
 }
 
 
-int getpinfo()
+int getpinfo(struct proc_stat * process, int pid)
 {
   struct proc *p;
-
+  // cprintf("the pid we are trying to find is %d\n", pid);
   // enable interrupts on  this processeor
   sti();
 
   // loop over the process table looking for processes with  pid
   acquire(&ptable.lock);
-
-  cprintf("name \t pid \t state \t \n");
+  int found = 0;
 
   for(p = ptable.proc ; p< &ptable.proc[NPROC] ; p++)
   {
-    if(p->state == SLEEPING)
-      cprintf("%s \t %d \t SLEEPING \t \n", p->name, p->pid);
-    else if(p->state == RUNNING)
-      cprintf("%s \t %d \t RUNNING \t \n", p->name, p->pid);
-    else if(p->state == RUNNABLE)
-      cprintf("%s \t %d \t RUNNABLE \t \n", p->name, p->pid);
+    if(p->pid == pid)
+    {
+      found = 1 ;
+      // now we will allocate the appropirate fields to the proc_Stat thing
+      process->runtime = p->rtime;
+      process->num_run = p->num_run;
+      process->pid = p->pid;
+
+      // this finishes the allocatation
+      cprintf("ID : %d  Num run : %d Run Time : %d\n", process->pid, process->num_run , process->runtime);
+    }
   }
+
+  if(found == 0)
+  {
+    cprintf("the process was not found ::((. Please retry with maybe a correct pid. Below is the list of all Pids for reference\n");
+    for(p = ptable.proc ; p< &ptable.proc[NPROC] ; p++)
+    {
+      if(p->state == UNUSED)
+        continue;  
+      cprintf("Pid %d name : %s \n", p->pid, p->name);
+    }
+  }
+
+  // here I merely have to fill up the proc_stat structure
   release(&ptable.lock);
   return 22;
 }
