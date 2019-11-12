@@ -49,7 +49,26 @@ struct proc {
   struct file *ofile[NOFILE];  // Open files
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
+
+
+  int ctime;                   // creation time
+  int rtime;                   // total time
+  int etime;                   // end time
+  int num_run;
+  int time_in_queues;
+  int wait_time;
+
 };
+
+// struct proc_stat
+// {
+//   int pid; 
+//   int runtime;
+//   int num_run;
+//   // int current_queue;  // this will tell for multi queue scheduling as to which queue does our guy currently belong
+//   // int ticks[5];  // this will tell for multi queue scheduling as to how much time has been spent in each queue
+
+// };
 
 // Process memory is laid out contiguously, low addresses first:
 //   text

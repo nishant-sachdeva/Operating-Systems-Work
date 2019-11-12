@@ -20,3 +20,10 @@
 #define SYS_link   19
 #define SYS_mkdir  20
 #define SYS_close  21
+
+
+
+// here we are going to add fields for our custom sys calls
+
+#define SYS_getpinfo 22
+#define SYS_waitx 23
